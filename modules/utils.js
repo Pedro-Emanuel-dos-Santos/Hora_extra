@@ -13,6 +13,9 @@ const diasSemana = [
     "Sábado"
 ];
 
+// Array com abreviações dos dias
+const diasSemanaAbrev = ["DOM", "SEG", "TER", "QUA", "QUI", "SEX", "SAB"];
+
 /**
  * Calcula diferença entre dois horários
  * @param {string} inicio - Horário de início (HH:MM)
@@ -48,6 +51,15 @@ function formatarNumero(num) {
 }
 
 /**
+ * Formata valor monetário
+ * @param {number} valor - Valor a ser formatado
+ * @returns {string} Valor formatado em reais
+ */
+function formatarMoeda(valor) {
+    return 'R$ ' + (typeof valor === 'number' ? valor.toFixed(2).replace('.', ',') : '0,00');
+}
+
+/**
  * Valida formato HH:MM
  * @param {string} horario - Horário a ser validado
  * @returns {boolean} True se válido
@@ -69,6 +81,15 @@ function getNomeMes(mes) {
 }
 
 /**
+ * Retorna a abreviação do dia da semana (0-6)
+ * @param {number} dia - Número do dia (0-6)
+ * @returns {string} Abreviação do dia
+ */
+function getDiaAbreviado(dia) {
+    return diasSemanaAbrev[dia] || diasSemanaAbrev[0];
+}
+
+/**
  * Retorna dados atuais do sistema
  * @returns {Object} Dados atuais
  */
@@ -82,15 +103,45 @@ function getDadosAtuais() {
 }
 
 /**
- * Exporta funções úteis
+ * Destacar uma linha da tabela temporariamente
+ * @param {HTMLElement} linha - Linha a ser destacada
+ * @param {string} cor - Cor de destaque (nome da classe)
  */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        diasSemana,
-        diferencaHoras,
-        formatarNumero,
-        validarFormatoHorario,
-        getNomeMes,
-        getDadosAtuais
+function destaqueLinha(linha, tipo = 'info') {
+    const classes = {
+        success: 'destaque-success',
+        error: 'destaque-error',
+        warning: 'destaque-warning',
+        info: 'destaque-info'
     };
+    
+    linha.classList.add(classes[tipo] || 'destaque-info');
+    
+    setTimeout(() => {
+        linha.classList.remove(classes[tipo] || 'destaque-info');
+    }, 1500);
 }
+
+/**
+ * Adicionar estilos CSS para destaques dinâmicos
+ */
+function adicionarEstilosDestaque() {
+    if (!document.getElementById('estilos-destaque')) {
+        const style = document.createElement('style');
+        style.id = 'estilos-destaque';
+        style.textContent = `
+            .destaque-success { background-color: rgba(16, 185, 129, 0.1) !important; }
+            .destaque-error { background-color: rgba(239, 68, 68, 0.1) !important; }
+            .destaque-warning { background-color: rgba(245, 158, 11, 0.1) !important; }
+            .destaque-info { background-color: rgba(59, 130, 246, 0.1) !important; }
+            .destaque-success td { background-color: rgba(16, 185, 129, 0.1) !important; }
+            .destaque-error td { background-color: rgba(239, 68, 68, 0.1) !important; }
+            .destaque-warning td { background-color: rgba(245, 158, 11, 0.1) !important; }
+            .destaque-info td { background-color: rgba(59, 130, 246, 0.1) !important; }
+        `;
+        document.head.appendChild(style);
+    }
+}
+
+// Inicializar estilos de destaque
+adicionarEstilosDestaque();

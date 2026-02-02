@@ -8,6 +8,7 @@
 function preencherSelects() {
     const mesSelect = document.getElementById("mes");
     const anoSelect = document.getElementById("ano");
+    const temaSelect = document.getElementById("tema");
 
     // Limpar selects existentes
     mesSelect.innerHTML = '';
@@ -28,6 +29,11 @@ function preencherSelects() {
     // Definir valores padrão (mês e ano atual)
     mesSelect.value = new Date().getMonth();
     anoSelect.value = anoAtual;
+    
+    // Configurar evento para tema
+    temaSelect.addEventListener('change', function() {
+        mudarTema(this.value);
+    });
 }
 
 /**
@@ -54,6 +60,7 @@ function gerarCalendario() {
         const data = new Date(ano, mes, dia);
         const diaSemana = data.getDay();
         const nomeDiaSemana = diasSemana[diaSemana];
+        const diaAbreviado = getDiaAbreviado(diaSemana);
         
         // Formatar data no padrão brasileiro (DD/MM/AAAA)
         const dataFormatada = dia.toString().padStart(2, '0') + '/' + 
@@ -69,10 +76,21 @@ function gerarCalendario() {
             tr.classList.add("sabado");
         }
 
+        // Adicionar atributos para controle
+        tr.setAttribute('data-dia', dia);
+        tr.setAttribute('data-mes', mes);
+        tr.setAttribute('data-ano', ano);
+
         // Criar HTML da linha da tabela
         tr.innerHTML = `
-            <td><strong>${dataFormatada}</strong></td>
-            <td class="dia-semana" data-diasemana="${diaSemana}">${nomeDiaSemana.toUpperCase()}</td>
+            <td>
+                <strong>${dataFormatada}</strong>
+                <div class="dia-numero">${dia}</div>
+            </td>
+            <td class="dia-semana" data-diasemana="${diaSemana}">
+                <span class="dia-abreviado">${diaAbreviado}</span>
+                <span class="dia-completo">${nomeDiaSemana.toUpperCase()}</span>
+            </td>
             <td><input type="time" class="entrada1" onchange="validarHorario(this)"></td>
             <td><input type="time" class="saida1" onchange="validarHorario(this)"></td>
             <td><input type="time" class="entrada2" onchange="validarHorario(this)"></td>
@@ -87,7 +105,7 @@ function gerarCalendario() {
     }
     
     // Mostrar mensagem informativa
-    mostrarMensagem(`📅 Calendário gerado com ${diasMes} dias!<br><small>Use "Preencher Horários Padrão" para preencher automaticamente.</small>`, "info");
+    mostrarMensagem(`📅 Calendário gerado com ${diasMes} dias!<br><small>Use "Preencher Horários" para preencher automaticamente.</small>`, "success");
     
     // Calcular automaticamente (vai mostrar zeros)
     setTimeout(() => calcularMes(), 500);
@@ -122,7 +140,7 @@ function preencherHorariosPadrao() {
             inputs[3].value = "18:00"; // Saída tarde
             
             // Destacar visualmente que foi preenchido
-            destaqueLinha(linha, "#e8f6f3");
+            destaqueLinha(linha, "success");
             
             diasPreenchidos++;
         }
@@ -136,9 +154,9 @@ function preencherHorariosPadrao() {
 }
 
 /**
- * Limpa todos os horários da tabela
+ * Limpa todos os horários da tabela (com modal de confirmação)
  */
-function limparHorarios() {
+function limparHorariosComModal() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
     
     if (linhas.length === 0) {
@@ -146,48 +164,48 @@ function limparHorarios() {
         return;
     }
     
-    // Confirmar antes de limpar
-    if (!confirm("⚠️ Tem certeza que deseja limpar TODOS os horários?\nIsso não pode ser desfeito.")) {
-        return;
-    }
+    mostrarModal({
+        titulo: 'Limpar Horários',
+        mensagem: 'Tem certeza que deseja limpar TODOS os horários?<br><small>Esta ação não pode ser desfeita.</small>',
+        tipo: 'warning',
+        confirmarTexto: 'Sim, Limpar Tudo',
+        cancelarTexto: 'Cancelar',
+        onConfirmar: () => {
+            let diasLimpos = 0;
     
-    let diasLimpos = 0;
-    
-    linhas.forEach(linha => {
-        const inputs = linha.querySelectorAll("input[type='time']");
-        
-        // Limpar todos os inputs de horário
-        inputs.forEach(input => {
-            input.value = "";
-        });
-        
-        // Resetar células de cálculo
-        linha.querySelector(".trab").innerText = "0.00";
-        linha.querySelector(".extra-diaria").innerText = "0.00";
-        linha.querySelector(".extra-semanal").innerText = "0.00";
-        linha.querySelector(".falta").innerText = "0.00";
-        
-        // Destacar visualmente que foi limpo
-        destaqueLinha(linha, "#fdedec");
-        
-        diasLimpos++;
+            linhas.forEach(linha => {
+                const inputs = linha.querySelectorAll("input[type='time']");
+                
+                // Limpar todos os inputs de horário
+                inputs.forEach(input => {
+                    input.value = "";
+                });
+                
+                // Resetar células de cálculo
+                linha.querySelector(".trab").innerText = "0.00";
+                linha.querySelector(".extra-diaria").innerText = "0.00";
+                linha.querySelector(".extra-semanal").innerText = "0.00";
+                linha.querySelector(".falta").innerText = "0.00";
+                
+                // Destacar visualmente que foi limpo
+                destaqueLinha(linha, "error");
+                
+                diasLimpos++;
+            });
+            
+            // Resetar resumo
+            resetarResumo();
+            
+            // Mostrar mensagem de confirmação
+            mostrarMensagem(`🗑️ Todos os horários foram limpos! (${diasLimpos} dias)`, "warning");
+        },
+        onCancelar: () => {
+            mostrarMensagem("✅ Ação cancelada!", "info");
+        }
     });
-    
-    // Resetar resumo
-    resetarResumo();
-    
-    // Mostrar mensagem de confirmação
-    mostrarMensagem(`🗑️ Todos os horários foram limpos! (${diasLimpos} dias)`, "warning");
 }
 
-/**
- * Exporta funções do módulo
- */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        preencherSelects,
-        gerarCalendario,
-        preencherHorariosPadrao,
-        limparHorarios
-    };
+// Versão original para compatibilidade
+function limparHorarios() {
+    limparHorariosComModal();
 }

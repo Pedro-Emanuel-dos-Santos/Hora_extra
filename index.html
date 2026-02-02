@@ -4,52 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle Mensal de Horas - RH</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
-
 <div class="container">
-    <h1>📅 Controle Mensal de Horas - RH</h1>
+    <h1><i class="fas fa-calendar-alt"></i> Controle Mensal de Horas - RH</h1>
 
     <div class="topo">
         <div class="controle">
-            <label for="mes">Mês:</label>
+            <label for="mes"><i class="fas fa-calendar"></i> Mês:</label>
             <select id="mes"></select>
         </div>
 
         <div class="controle">
-            <label for="ano">Ano:</label>
+            <label for="ano"><i class="fas fa-calendar-day"></i> Ano:</label>
             <select id="ano"></select>
         </div>
 
         <div class="controle">
-            <label for="salario">Salário (R$):</label>
+            <label for="salario"><i class="fas fa-money-bill-wave"></i> Salário (R$):</label>
             <input type="number" id="salario" placeholder="Ex: 2500" min="0" step="0.01">
         </div>
 
-        <button onclick="gerarCalendario()" title="Criar calendário do mês selecionado">📋 Gerar Mês</button>
-        <button onclick="preencherHorariosPadrao()" title="Preencher automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis">🕒 Preencher Horários Padrão</button>
-        <button onclick="limparHorarios()" title="Limpar todos os horários da tabela">🗑️ Limpar Horários</button>
-        <button onclick="calcularMes()" title="Calcular totais do mês">🧮 Calcular Mês</button>
-        <button onclick="exportarPDFMenu()" title="Exportar relatório para PDF">📄 Exportar PDF</button>
-        <button onclick="exportarParaCSV()" title="Exportar dados para CSV">📁 Exportar CSV</button>
-        <button onclick="imprimirRelatorio()" title="Imprimir relatório">🖨️ Imprimir</button>
+        <div class="controle">
+            <label for="tema"><i class="fas fa-palette"></i> Tema:</label>
+            <select id="tema">
+                <option value="claro">Claro</option>
+                <option value="escuro">Escuro</option>
+                <option value="azul">Azul</option>
+                <option value="verde">Verde</option>
+            </select>
+        </div>
+
+        <div class="btn-container">
+            <button onclick="gerarCalendario()" title="Criar calendário do mês selecionado">
+                <i class="fas fa-calendar-plus"></i> Gerar Mês
+            </button>
+            <button onclick="preencherHorariosPadrao()" title="Preencher automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis">
+                <i class="fas fa-clock"></i> Preencher Horários
+            </button>
+            <button onclick="limparHorariosComModal()" title="Limpar todos os horários da tabela">
+                <i class="fas fa-broom"></i> Limpar Horários
+            </button>
+            <button onclick="calcularMes()" title="Calcular totais do mês">
+                <i class="fas fa-calculator"></i> Calcular Mês
+            </button>
+            <button onclick="exportarPDFMenu()" title="Exportar relatório para PDF">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </button>
+            <button onclick="exportarParaCSV()" title="Exportar dados para CSV">
+                <i class="fas fa-file-csv"></i> Exportar CSV
+            </button>
+            <button onclick="imprimirRelatorio()" title="Imprimir relatório">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+            <button onclick="copiarResumo()" title="Copiar resumo para área de transferência">
+                <i class="fas fa-copy"></i> Copiar Resumo
+            </button>
+        </div>
     </div>
 
     <div class="tabela-container">
         <table>
             <thead>
                 <tr>
-                    <th>Data</th>
-                    <th>Dia</th>
-                    <th>Entrada</th>
-                    <th>Saída</th>
-                    <th>Entrada</th>
-                    <th>Saída</th>
-                    <th>Trabalhado</th>
-                    <th>Extra (Banco)</th>
-                    <th>Extra (Paga)</th>
-                    <th>Falta</th>
+                    <th><i class="fas fa-calendar-day"></i> Data</th>
+                    <th><i class="fas fa-calendar-week"></i> Dia</th>
+                    <th><i class="fas fa-sign-in-alt"></i> Entrada</th>
+                    <th><i class="fas fa-sign-out-alt"></i> Saída</th>
+                    <th><i class="fas fa-sign-in-alt"></i> Entrada</th>
+                    <th><i class="fas fa-sign-out-alt"></i> Saída</th>
+                    <th><i class="fas fa-briefcase"></i> Trabalhado</th>
+                    <th><i class="fas fa-piggy-bank"></i> Extra (Banco)</th>
+                    <th><i class="fas fa-money-bill-wave"></i> Extra (Paga)</th>
+                    <th><i class="fas fa-times-circle"></i> Falta</th>
                 </tr>
             </thead>
             <tbody id="corpoTabela"></tbody>
@@ -57,35 +87,71 @@
     </div>
 
     <div class="resumo">
-        <h2>📊 Resumo Mensal</h2>
-        <p>Total Trabalhado: <span id="totalHoras">0</span> h</p>
-        <p>Extras Diárias (Banco): <span id="totalExtrasDiarias">0</span> h</p>
-        <p>Extras Semanais (Pagas): <span id="totalExtrasSemanais">0</span> h</p>
-        <p>Horas Faltantes: <span id="totalFaltas">0</span> h</p>
-        <p>Valor Hora: R$ <span id="valorHora">0.00</span></p>
-        <p>Valor Extras (Pagas): R$ <span id="valorExtras">0.00</span></p>
-        <p>Descontos: R$ <span id="valorDescontos">0.00</span></p>
-        <p>Total Líquido: R$ <span id="totalLiquido">0.00</span></p>
+        <h2><i class="fas fa-chart-bar"></i> Resumo Mensal</h2>
+        <div class="resumo-grid">
+            <div class="resumo-item">
+                <span class="resumo-label">Total Trabalhado:</span>
+                <span class="resumo-valor" id="totalHoras">0 h</span>
+            </div>
+            <div class="resumo-item">
+                <span class="resumo-label">Extras Diárias (Banco):</span>
+                <span class="resumo-valor" id="totalExtrasDiarias">0 h</span>
+            </div>
+            <div class="resumo-item">
+                <span class="resumo-label">Extras Semanais (Pagas):</span>
+                <span class="resumo-valor" id="totalExtrasSemanais">0 h</span>
+            </div>
+            <div class="resumo-item">
+                <span class="resumo-label">Horas Faltantes:</span>
+                <span class="resumo-valor" id="totalFaltas">0 h</span>
+            </div>
+            <div class="resumo-item">
+                <span class="resumo-label">Valor Hora:</span>
+                <span class="resumo-valor" id="valorHora">R$ 0.00</span>
+            </div>
+            <div class="resumo-item">
+                <span class="resumo-label">Valor Extras (Pagas):</span>
+                <span class="resumo-valor" id="valorExtras">R$ 0.00</span>
+            </div>
+            <div class="resumo-item">
+                <span class="resumo-label">Descontos:</span>
+                <span class="resumo-valor" id="valorDescontos">R$ 0.00</span>
+            </div>
+            <div class="resumo-item" style="grid-column: 1 / -1;">
+                <span class="resumo-label">Total Líquido:</span>
+                <span class="resumo-valor" id="totalLiquido">R$ 0.00</span>
+            </div>
+        </div>
     </div>
 
     <div class="legenda">
-        <div class="legenda-item">
-            <span class="cor-domingo"></span> DOMINGO - Dia não útil
+        <h3><i class="fas fa-info-circle"></i> Legenda e Informações</h3>
+        <div class="legenda-grid">
+            <div class="legenda-item">
+                <span class="cor-indicador cor-domingo"></span>
+                <span>DOMINGO - Dia não útil</span>
+            </div>
+            <div class="legenda-item">
+                <span class="cor-indicador cor-sabado"></span>
+                <span>SÁBADO - Dia útil com regras especiais</span>
+            </div>
+            <div class="legenda-item">
+                <span class="cor-indicador cor-extra-banco"></span>
+                <span>Extra (Banco) - Acima de 8h/dia</span>
+            </div>
+            <div class="legenda-item">
+                <span class="cor-indicador cor-extra-paga"></span>
+                <span>Extra (Paga) - Acima de 44h/semana</span>
+            </div>
         </div>
-        <div class="legenda-item">
-            <span class="cor-sabado"></span> SÁBADO - Dia útil com regras especiais
-        </div>
-        <div class="legenda-item">
-            <span class="cor-extra-banco"></span> Extra (Banco) - Acima de 8h/dia
-        </div>
-        <div class="legenda-item">
-            <span class="cor-extra-paga"></span> Extra (Paga) - Acima de 44h/semana
-        </div>
+        
         <div class="info-extra">
-            <p><i>💡 Para fins de semana, todo trabalho é considerado hora extra paga</i></p>
-            <p><i>💡 Sistema calcula: 1h extra paga por semana (45h - 44h legais)</i></p>
-            <p><i>💡 <strong>Botão "Preencher Horários Padrão":</strong> Preenche automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis</i></p>
-            <p><i>💡 <strong>Botão "Exportar PDF":</strong> Exporta relatório completo em formato PDF</i></p>
+            <p><i class="fas fa-lightbulb"></i> <strong>Dicas Importantes:</strong></p>
+            <p><i class="fas fa-arrow-right"></i> Para fins de semana, todo trabalho é considerado hora extra paga</p>
+            <p><i class="fas fa-arrow-right"></i> Sistema calcula: 1h extra paga por semana (45h - 44h legais)</p>
+            <p><i class="fas fa-arrow-right"></i> <strong>Botão "Preencher Horários":</strong> Preenche automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis</p>
+            <p><i class="fas fa-arrow-right"></i> <strong>Botão "Exportar PDF":</strong> Exporta relatório completo em formato PDF</p>
+            <p><i class="fas fa-arrow-right"></i> <strong>Atalhos:</strong> Ctrl+G (Gerar), Ctrl+P (Preencher), Ctrl+C (Calcular), Ctrl+E (Exportar PDF)</p>
         </div>
     </div>
 </div>

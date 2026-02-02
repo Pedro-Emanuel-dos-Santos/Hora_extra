@@ -38,10 +38,10 @@ function exportarParaCSV() {
     csv += `Extras Diárias (Banco);${document.getElementById("totalExtrasDiarias").innerText}\n`;
     csv += `Extras Semanais (Pagas);${document.getElementById("totalExtrasSemanais").innerText}\n`;
     csv += `Horas Faltantes;${document.getElementById("totalFaltas").innerText}\n`;
-    csv += `Valor Hora;R$ ${document.getElementById("valorHora").innerText}\n`;
-    csv += `Valor Extras;R$ ${document.getElementById("valorExtras").innerText}\n`;
-    csv += `Descontos;R$ ${document.getElementById("valorDescontos").innerText}\n`;
-    csv += `Total Líquido;R$ ${document.getElementById("totalLiquido").innerText}\n`;
+    csv += `Valor Hora;${document.getElementById("valorHora").innerText}\n`;
+    csv += `Valor Extras;${document.getElementById("valorExtras").innerText}\n`;
+    csv += `Descontos;${document.getElementById("valorDescontos").innerText}\n`;
+    csv += `Total Líquido;${document.getElementById("totalLiquido").innerText}\n`;
     
     // Criar link para download
     const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
@@ -102,10 +102,10 @@ async function exportarParaPDF() {
                 </h3>
                 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 15px;">
                     <div>
-                        <strong>Salário Base:</strong> R$ ${document.getElementById("salario").value || "0,00"}
+                        <strong>Salário Base:</strong> ${document.getElementById("salario").value ? 'R$ ' + parseFloat(document.getElementById("salario").value).toFixed(2).replace('.', ',') : "R$ 0,00"}
                     </div>
                     <div>
-                        <strong>Valor Hora:</strong> R$ ${document.getElementById("valorHora").innerText}
+                        <strong>Valor Hora:</strong> ${document.getElementById("valorHora").innerText}
                     </div>
                 </div>
             </div>
@@ -263,8 +263,8 @@ function exportarParaPDFSimples() {
     // Dados do funcionário
     pdf.setFontSize(11);
     pdf.setTextColor(0, 0, 0);
-    pdf.text(`Salário Base: R$ ${document.getElementById("salario").value || "0,00"}`, 15, 32);
-    pdf.text(`Valor Hora: R$ ${document.getElementById("valorHora").innerText}`, 15, 38);
+    pdf.text(`Salário Base: ${document.getElementById("salario").value ? 'R$ ' + parseFloat(document.getElementById("salario").value).toFixed(2).replace('.', ',') : "R$ 0,00"}`, 15, 32);
+    pdf.text(`Valor Hora: ${document.getElementById("valorHora").innerText}`, 15, 38);
     
     // Cabeçalho da tabela
     const colunas = ["Data", "Dia", "Ent1", "Sai1", "Ent2", "Sai2", "Trab", "ExtB", "ExtP", "Falta"];
@@ -359,28 +359,28 @@ function exportarParaPDFSimples() {
     
     pdf.setFont(undefined, 'normal');
     y += 8;
-    pdf.text(`Total Horas Trabalhadas: ${document.getElementById("totalHoras").innerText} h`, 20, y);
+    pdf.text(`Total Horas Trabalhadas: ${document.getElementById("totalHoras").innerText}`, 20, y);
     y += 6;
-    pdf.text(`Extras Diárias (Banco): ${document.getElementById("totalExtrasDiarias").innerText} h`, 20, y);
+    pdf.text(`Extras Diárias (Banco): ${document.getElementById("totalExtrasDiarias").innerText}`, 20, y);
     y += 6;
     pdf.setTextColor(230, 126, 34);
-    pdf.text(`Extras Semanais (Pagas): ${document.getElementById("totalExtrasSemanais").innerText} h`, 20, y);
+    pdf.text(`Extras Semanais (Pagas): ${document.getElementById("totalExtrasSemanais").innerText}`, 20, y);
     y += 6;
     pdf.setTextColor(231, 76, 60);
-    pdf.text(`Horas Faltantes: ${document.getElementById("totalFaltas").innerText} h`, 20, y);
+    pdf.text(`Horas Faltantes: ${document.getElementById("totalFaltas").innerText}`, 20, y);
     y += 6;
     pdf.setTextColor(0, 0, 0);
-    pdf.text(`Valor Hora: R$ ${document.getElementById("valorHora").innerText}`, 20, y);
+    pdf.text(`Valor Hora: ${document.getElementById("valorHora").innerText}`, 20, y);
     y += 6;
     pdf.setTextColor(46, 204, 113);
-    pdf.text(`Valor Extras: R$ ${document.getElementById("valorExtras").innerText}`, 20, y);
+    pdf.text(`Valor Extras: ${document.getElementById("valorExtras").innerText}`, 20, y);
     y += 6;
     pdf.setTextColor(192, 57, 43);
-    pdf.text(`Descontos: R$ ${document.getElementById("valorDescontos").innerText}`, 20, y);
+    pdf.text(`Descontos: ${document.getElementById("valorDescontos").innerText}`, 20, y);
     y += 8;
     pdf.setFont(undefined, 'bold');
     pdf.setTextColor(44, 62, 80);
-    pdf.text(`TOTAL LÍQUIDO: R$ ${document.getElementById("totalLiquido").innerText}`, 20, y);
+    pdf.text(`TOTAL LÍQUIDO: ${document.getElementById("totalLiquido").innerText}`, 20, y);
     
     // Rodapé
     pdf.setFontSize(9);
@@ -433,17 +433,19 @@ function exportarPDFMenu() {
         display: flex;
         justify-content: center;
         align-items: center;
-        z-index: 10000;
+        z-index: 99999;
+        backdrop-filter: blur(5px);
+        animation: fadeIn 0.3s ease;
     `;
     
     const modalContent = document.createElement("div");
     modalContent.style.cssText = `
         background: white;
-        border-radius: 10px;
+        border-radius: 16px;
         padding: 0;
         min-width: 400px;
         max-width: 500px;
-        box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.3);
     `;
     
     modalContent.innerHTML = html;
@@ -485,18 +487,5 @@ function exportarPDFMenu() {
         if (e.target === modal) {
             document.body.removeChild(modal);
         }
-    };
-}
-
-/**
- * Exporta funções do módulo
- */
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = {
-        exportarParaCSV,
-        exportarParaPDF,
-        exportarParaPDFSimples,
-        exportarPDFMenu,
-        imprimirRelatorio
     };
 }

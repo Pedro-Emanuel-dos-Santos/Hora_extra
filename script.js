@@ -7,6 +7,7 @@
  */
 window.onload = function() {
     preencherSelects();
+    carregarTemaSalvo();
     
     // Gerar calendário automaticamente após pequeno delay
     setTimeout(() => {
@@ -74,6 +75,18 @@ function configurarEventListeners() {
             e.preventDefault();
             exportarParaCSV();
         }
+        
+        // Ctrl + I = Imprimir
+        if (e.ctrlKey && e.key === 'i') {
+            e.preventDefault();
+            imprimirRelatorio();
+        }
+        
+        // Ctrl + R = Copiar Resumo
+        if (e.ctrlKey && e.key === 'r') {
+            e.preventDefault();
+            copiarResumo();
+        }
     });
 }
 
@@ -85,10 +98,16 @@ function configurarEventListeners() {
 window.gerarCalendario = gerarCalendario;
 window.preencherHorariosPadrao = preencherHorariosPadrao;
 window.limparHorarios = limparHorarios;
+window.limparHorariosComModal = limparHorariosComModal;
 window.calcularMes = calcularMes;
 window.validarHorario = validarHorario;
 window.exportarParaCSV = exportarParaCSV;
 window.exportarPDFMenu = exportarPDFMenu;
+window.exportarParaPDF = exportarParaPDF;
+window.exportarParaPDFSimples = exportarParaPDFSimples;
 window.imprimirRelatorio = imprimirRelatorio;
 window.copiarResumo = copiarResumo;
+window.mostrarMensagem = mostrarMensagem;
+window.mostrarModal = mostrarModal;
+window.mudarTema = mudarTema;
 window.resetarResumo = resetarResumo;
