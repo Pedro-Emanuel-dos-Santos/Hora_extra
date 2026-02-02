@@ -1,25 +1,17 @@
 body {
-    font-family: Arial, Helvetica, sans-serif;
+    font-family: Arial, sans-serif;
     background: #f4f6f8;
-}
-
-.container {
-    max-width: 1400px;
-    margin: 30px auto;
-    background: #fff;
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    padding: 20px;
 }
 
 h1 {
-    text-align: center;
-    color: #1f2937;
+    margin-bottom: 20px;
 }
 
 .topo {
-    display: flex;
-    gap: 20px;
+    background: #ffffff;
+    padding: 15px;
+    border-radius: 6px;
     margin-bottom: 20px;
 }
 
@@ -27,49 +19,41 @@ h1 {
     margin-right: 5px;
 }
 
-.financeiro {
-    background: #f1f5f9;
-    padding: 15px;
-    border-radius: 6px;
-    margin-bottom: 20px;
+.topo input,
+.topo select,
+.topo button {
+    margin-right: 10px;
+    padding: 6px;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 13px;
+    background: #ffffff;
 }
 
-th, td {
+table th,
+table td {
+    border: 1px solid #ddd;
     padding: 6px;
     text-align: center;
-    border-bottom: 1px solid #e5e7eb;
 }
 
-th {
-    background: #1f2937;
-    color: white;
-}
-
-input[type="time"] {
-    padding: 4px;
+table th {
+    background: #e9ecef;
 }
 
 .resumo {
     margin-top: 20px;
-    background: #f8fafc;
+    background: #ffffff;
     padding: 15px;
     border-radius: 6px;
 }
 
-button {
-    margin-top: 20px;
-    width: 100%;
-    padding: 12px;
-    background: #2563eb;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 16px;
-    cursor: pointer;
+.domingo {
+    background: #ffe5e5;
+}
+
+.sabado {
+    background: #fff4cc;
 }

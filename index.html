@@ -2,57 +2,52 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Controle de Horas – RH (Mensal)</title>
+    <title>Controle Mensal de Horas - RH</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<div class="container">
-    <h1>Controle de Horas – Fechamento Mensal</h1>
+<h1>Controle Mensal de Horas</h1>
 
-    <div class="topo">
-        <div>
-            <label>Mês:</label>
-            <select id="mes"></select>
-        </div>
-        <div>
-            <label>Ano:</label>
-            <select id="ano"></select>
-        </div>
-    </div>
+<div class="topo">
+    <label>Mês:</label>
+    <select id="mes"></select>
 
-    <div class="financeiro">
-        <label>Salário Mensal (R$):</label>
-        <input type="number" id="salario" placeholder="Ex: 2500">
-        <p><strong>Valor da Hora:</strong> R$ <span id="valorHora">0.00</span></p>
-    </div>
+    <label>Ano:</label>
+    <select id="ano"></select>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Dia</th>
-                <th>Entrada</th>
-                <th>Saída Almoço</th>
-                <th>Volta Almoço</th>
-                <th>Saída Final</th>
-                <th>Trabalhadas</th>
-                <th>Extra</th>
-                <th>Falta</th>
-            </tr>
-        </thead>
-        <tbody id="tabelaDias"></tbody>
-    </table>
+    <label>Salário (R$):</label>
+    <input type="number" id="salario" placeholder="Ex: 2500">
 
-    <div class="resumo">
-        <h3>Resumo Mensal</h3>
-        <p><strong>Total Trabalhado:</strong> <span id="totalMes">0</span> h</p>
-        <p><strong>Total Extras:</strong> <span id="extraMes">0</span> h</p>
-        <p><strong>Total Faltas:</strong> <span id="faltaMes">0</span> h</p>
-        <p><strong>Valor Extras (R$):</strong> R$ <span id="valorExtra">0.00</span></p>
-        <p><strong>Desconto Faltas (R$):</strong> R$ <span id="valorDesconto">0.00</span></p>
-    </div>
+    <button onclick="gerarCalendario()">Gerar Mês</button>
+    <button onclick="calcularMes()">Calcular Mês</button>
+</div>
 
-    <button onclick="calcularMesUI()">Calcular Mês</button>
+<table>
+    <thead>
+        <tr>
+            <th>Data</th>
+            <th>Dia</th>
+            <th>Entrada</th>
+            <th>Saída</th>
+            <th>Entrada</th>
+            <th>Saída</th>
+            <th>Trabalhado</th>
+            <th>Extra</th>
+            <th>Falta</th>
+        </tr>
+    </thead>
+    <tbody id="corpoTabela"></tbody>
+</table>
+
+<div class="resumo">
+    <h2>Resumo Mensal</h2>
+    <p>Total Trabalhado: <span id="totalHoras">0</span> h</p>
+    <p>Horas Extras: <span id="totalExtras">0</span> h</p>
+    <p>Horas Faltantes: <span id="totalFaltas">0</span> h</p>
+    <p>Valor Hora: R$ <span id="valorHora">0.00</span></p>
+    <p>Valor Extras: R$ <span id="valorExtras">0.00</span></p>
+    <p>Descontos: R$ <span id="valorDescontos">0.00</span></p>
 </div>
 
 <script src="script.js"></script>

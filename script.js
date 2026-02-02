@@ -1,136 +1,103 @@
-const CARGA_DIARIA = 8;
+const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
 
-// Utilidades
-function horaParaDecimal(h) {
-    const [hh, mm] = h.split(":").map(Number);
-    return hh + (mm / 60);
-}
+function preencherSelects() {
+    const mes = document.getElementById("mes");
+    const ano = document.getElementById("ano");
 
-// Quantos dias tem o mês
-function diasNoMes(mes, ano) {
-    return new Date(ano, mes + 1, 0).getDate();
-}
-
-// Calcula um dia
-function calcularDia(e1, s1, e2, s2) {
-    if (!e1 || !s1 || !e2 || !s2) {
-        return { trabalhadas: 0, extra: 0, falta: 0 };
+    for (let i = 0; i < 12; i++) {
+        mes.innerHTML += `<option value="${i}">${i + 1}</option>`;
     }
 
-    const manha = horaParaDecimal(s1) - horaParaDecimal(e1);
-    const tarde = horaParaDecimal(s2) - horaParaDecimal(e2);
-
-    let total = manha + tarde;
-    if (total < 0) total = 0;
-
-    let extra = 0;
-    let falta = 0;
-
-    if (total > CARGA_DIARIA) extra = total - CARGA_DIARIA;
-    else if (total < CARGA_DIARIA) falta = CARGA_DIARIA - total;
-
-    return { trabalhadas: total, extra, falta };
-}
-
-// Valor hora
-function calcularValorHora() {
-    const salario = Number(document.getElementById("salario").value);
-    if (!salario) return 0;
-    return salario / 220;
-}
-
-// Preenche selects
-function inicializarPeriodo() {
-    const hoje = new Date();
-    const selectMes = document.getElementById("mes");
-    const selectAno = document.getElementById("ano");
-
-    const meses = [
-        "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
-        "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
-    ];
-
-    meses.forEach((m, i) => {
-        const opt = document.createElement("option");
-        opt.value = i;
-        opt.text = m;
-        if (i === hoje.getMonth()) opt.selected = true;
-        selectMes.appendChild(opt);
-    });
-
-    for (let a = 2024; a <= 2030; a++) {
-        const opt = document.createElement("option");
-        opt.value = a;
-        opt.text = a;
-        if (a === hoje.getFullYear()) opt.selected = true;
-        selectAno.appendChild(opt);
+    const anoAtual = new Date().getFullYear();
+    for (let i = anoAtual - 1; i <= anoAtual + 2; i++) {
+        ano.innerHTML += `<option value="${i}">${i}</option>`;
     }
 
-    selectMes.onchange = gerarTabela;
-    selectAno.onchange = gerarTabela;
+    mes.value = new Date().getMonth();
+    ano.value = anoAtual;
 }
 
-// Gera tabela conforme mês/ano
-function gerarTabela() {
+function gerarCalendario() {
     const mes = Number(document.getElementById("mes").value);
     const ano = Number(document.getElementById("ano").value);
-    const totalDias = diasNoMes(mes, ano);
-
-    const tbody = document.getElementById("tabelaDias");
+    const tbody = document.getElementById("corpoTabela");
     tbody.innerHTML = "";
 
-    for (let d = 1; d <= totalDias; d++) {
+    const diasMes = new Date(ano, mes + 1, 0).getDate();
+
+    for (let dia = 1; dia <= diasMes; dia++) {
+        const data = new Date(ano, mes, dia);
+        const diaSemana = data.getDay();
+
         const tr = document.createElement("tr");
+        if (diaSemana === 0) tr.classList.add("domingo");
+        if (diaSemana === 6) tr.classList.add("sabado");
+
         tr.innerHTML = `
-            <td>${d}</td>
-            <td><input type="time" id="e1_${d}"></td>
-            <td><input type="time" id="s1_${d}"></td>
-            <td><input type="time" id="e2_${d}"></td>
-            <td><input type="time" id="s2_${d}"></td>
-            <td id="trab_${d}">0</td>
-            <td id="extra_${d}">0</td>
-            <td id="falta_${d}">0</td>
+            <td>${dia}/${mes + 1}/${ano}</td>
+            <td>${diasSemana[diaSemana]}</td>
+            <td><input type="time"></td>
+            <td><input type="time"></td>
+            <td><input type="time"></td>
+            <td><input type="time"></td>
+            <td class="trab">0</td>
+            <td class="extra">0</td>
+            <td class="falta">0</td>
         `;
+
         tbody.appendChild(tr);
     }
 }
 
-// Calcula mês
-function calcularMesUI() {
-    const mes = Number(document.getElementById("mes").value);
-    const ano = Number(document.getElementById("ano").value);
-    const totalDias = diasNoMes(mes, ano);
+function calcularMes() {
+    const linhas = document.querySelectorAll("#corpoTabela tr");
+    let total = 0, extra = 0, falta = 0;
 
-    let totalHoras = 0;
-    let totalExtra = 0;
-    let totalFalta = 0;
+    linhas.forEach(linha => {
+        const inputs = linha.querySelectorAll("input");
+        let minutos = 0;
 
-    for (let d = 1; d <= totalDias; d++) {
-        const r = calcularDia(
-            document.getElementById(`e1_${d}`).value,
-            document.getElementById(`s1_${d}`).value,
-            document.getElementById(`e2_${d}`).value,
-            document.getElementById(`s2_${d}`).value
-        );
+        if (inputs[0].value && inputs[1].value) {
+            minutos += diferencaMinutos(inputs[0].value, inputs[1].value);
+        }
+        if (inputs[2].value && inputs[3].value) {
+            minutos += diferencaMinutos(inputs[2].value, inputs[3].value);
+        }
 
-        document.getElementById(`trab_${d}`).innerText = r.trabalhadas.toFixed(2);
-        document.getElementById(`extra_${d}`).innerText = r.extra.toFixed(2);
-        document.getElementById(`falta_${d}`).innerText = r.falta.toFixed(2);
+        minutos -= 60; // almoço
+        if (minutos < 0) minutos = 0;
 
-        totalHoras += r.trabalhadas;
-        totalExtra += r.extra;
-        totalFalta += r.falta;
-    }
+        const horas = minutos / 60;
+        linha.querySelector(".trab").innerText = horas.toFixed(2);
 
-    const valorHora = calcularValorHora();
+        const dia = linha.children[1].innerText;
+
+        if (horas > 8) {
+            linha.querySelector(".extra").innerText = (horas - 8).toFixed(2);
+            extra += horas - 8;
+        } else if (horas < 8 && dia !== "Sábado" && dia !== "Domingo") {
+            linha.querySelector(".falta").innerText = (8 - horas).toFixed(2);
+            falta += 8 - horas;
+        }
+
+        total += horas;
+    });
+
+    const salario = Number(document.getElementById("salario").value);
+    const valorHora = salario / 220;
+
+    document.getElementById("totalHoras").innerText = total.toFixed(2);
+    document.getElementById("totalExtras").innerText = extra.toFixed(2);
+    document.getElementById("totalFaltas").innerText = falta.toFixed(2);
     document.getElementById("valorHora").innerText = valorHora.toFixed(2);
-    document.getElementById("totalMes").innerText = totalHoras.toFixed(2);
-    document.getElementById("extraMes").innerText = totalExtra.toFixed(2);
-    document.getElementById("faltaMes").innerText = totalFalta.toFixed(2);
-    document.getElementById("valorExtra").innerText = (totalExtra * valorHora * 1.5).toFixed(2);
-    document.getElementById("valorDesconto").innerText = (totalFalta * valorHora).toFixed(2);
+    document.getElementById("valorExtras").innerText = (extra * valorHora * 1.5).toFixed(2);
+    document.getElementById("valorDescontos").innerText = (falta * valorHora).toFixed(2);
 }
 
-// Inicialização
-inicializarPeriodo();
-gerarTabela();
+function diferencaMinutos(inicio, fim) {
+    const [h1, m1] = inicio.split(":").map(Number);
+    const [h2, m2] = fim.split(":").map(Number);
+    return (h2 * 60 + m2) - (h1 * 60 + m1);
+}
+
+preencherSelects();
