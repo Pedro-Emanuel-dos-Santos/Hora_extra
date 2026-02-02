@@ -100,37 +100,27 @@ h1 {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
-.topo button:nth-child(4) {
-    background: #2ecc71;
-}
+/* Cores específicas para cada botão */
+.topo button:nth-child(4) { background: #2ecc71; }
+.topo button:nth-child(4):hover { background: #27ae60; }
 
-.topo button:nth-child(4):hover {
-    background: #27ae60;
-}
+.topo button:nth-child(5) { background: #9b59b6; }
+.topo button:nth-child(5):hover { background: #8e44ad; }
 
-.topo button:nth-child(5) {
-    background: #9b59b6;
-}
+.topo button:nth-child(6) { background: #e74c3c; }
+.topo button:nth-child(6):hover { background: #c0392b; }
 
-.topo button:nth-child(5):hover {
-    background: #8e44ad;
-}
+.topo button:nth-child(7) { background: #f39c12; }
+.topo button:nth-child(7):hover { background: #d68910; }
 
-.topo button:nth-child(6) {
-    background: #e74c3c;
-}
+.topo button:nth-child(8) { background: #34495e; }
+.topo button:nth-child(8):hover { background: #2c3e50; }
 
-.topo button:nth-child(6):hover {
-    background: #c0392b;
-}
+.topo button:nth-child(9) { background: #1abc9c; }
+.topo button:nth-child(9):hover { background: #16a085; }
 
-.topo button:nth-child(7) {
-    background: #f39c12;
-}
-
-.topo button:nth-child(7):hover {
-    background: #d68910;
-}
+.topo button:nth-child(10) { background: #7f8c8d; }
+.topo button:nth-child(10):hover { background: #95a5a6; }
 
 /* ===== TABELA ===== */
 .tabela-container {
@@ -441,6 +431,53 @@ input[type="time"]:focus {
     }
 }
 
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* ===== ESTILOS PARA IMPRESSÃO/PDF ===== */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+    
+    .print-only {
+        display: block !important;
+    }
+    
+    .container {
+        width: 100% !important;
+        max-width: none !important;
+        margin: 0 !important;
+        padding: 10px !important;
+        box-shadow: none !important;
+    }
+    
+    .tabela-container {
+        overflow: visible !important;
+        border: 1px solid #ddd !important;
+    }
+    
+    table {
+        min-width: auto !important;
+        width: 100% !important;
+        font-size: 10pt !important;
+    }
+    
+    input[type="time"] {
+        border: none !important;
+        background: transparent !important;
+        width: auto !important;
+        appearance: none;
+        -webkit-appearance: none;
+    }
+    
+    .resumo {
+        page-break-inside: avoid;
+    }
+}
+
 /* ===== RESPONSIVIDADE ===== */
 @media (max-width: 1200px) {
     .container {
@@ -513,31 +550,5 @@ input[type="time"]:focus {
         width: 80px;
         font-size: 0.85em;
         padding: 6px;
-    }
-}
-
-@media print {
-    .topo,
-    .legenda,
-    button {
-        display: none !important;
-    }
-    
-    .container {
-        box-shadow: none;
-        padding: 0;
-    }
-    
-    .tabela-container {
-        overflow: visible;
-        border: none;
-    }
-    
-    table {
-        min-width: auto;
-    }
-    
-    .resumo {
-        break-inside: avoid;
     }
 }

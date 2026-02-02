@@ -31,6 +31,9 @@
         <button onclick="preencherHorariosPadrao()" title="Preencher automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis">🕒 Preencher Horários Padrão</button>
         <button onclick="limparHorarios()" title="Limpar todos os horários da tabela">🗑️ Limpar Horários</button>
         <button onclick="calcularMes()" title="Calcular totais do mês">🧮 Calcular Mês</button>
+        <button onclick="exportarPDFMenu()" title="Exportar relatório para PDF">📄 Exportar PDF</button>
+        <button onclick="exportarParaCSV()" title="Exportar dados para CSV">📁 Exportar CSV</button>
+        <button onclick="imprimirRelatorio()" title="Imprimir relatório">🖨️ Imprimir</button>
     </div>
 
     <div class="tabela-container">
@@ -82,10 +85,14 @@
             <p><i>💡 Para fins de semana, todo trabalho é considerado hora extra paga</i></p>
             <p><i>💡 Sistema calcula: 1h extra paga por semana (45h - 44h legais)</i></p>
             <p><i>💡 <strong>Botão "Preencher Horários Padrão":</strong> Preenche automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis</i></p>
+            <p><i>💡 <strong>Botão "Exportar PDF":</strong> Exporta relatório completo em formato PDF</i></p>
         </div>
     </div>
 </div>
 
+<!-- Bibliotecas para PDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
