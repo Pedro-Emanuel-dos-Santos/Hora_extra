@@ -60,7 +60,8 @@ function encontrarDiasUteisDaSemana(linhas, indexFinal) {
  */
 function calcularMes() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
-    const { salario } = getDadosAtuais();
+    const salarioInput = document.getElementById("salario");
+    const salario = salarioInput.value ? parseFloat(salarioInput.value) : 0;
 
     // Se não houver linhas, não calcular
     if (linhas.length === 0) {
@@ -196,30 +197,61 @@ function calcularMes() {
  * Atualiza o resumo com os resultados finais
  */
 function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, faltas) {
+    // Se não há salário definido, mostrar apenas horas
+    if (!salario || salario <= 0) {
+        document.getElementById("totalHoras").innerText = totalHoras.toFixed(2) + " h";
+        document.getElementById("totalExtrasDiarias").innerText = extrasDiarias.toFixed(2) + " h";
+        document.getElementById("totalExtrasSemanais").innerText = extrasSemanais.toFixed(2) + " h";
+        document.getElementById("totalFaltas").innerText = faltas.toFixed(2) + " h";
+        document.getElementById("valorHora").innerText = "R$ 0,00";
+        document.getElementById("valorExtras").innerText = "R$ 0,00";
+        document.getElementById("valorDescontos").innerText = "R$ 0,00";
+        document.getElementById("totalLiquido").innerText = "R$ 0,00";
+        
+        // Remover itens adicionados se existirem
+        const itensParaRemover = ['horasNormaisItem', 'horasExtrasItem', 'salarioBaseItem'];
+        itensParaRemover.forEach(id => {
+            const item = document.getElementById(id);
+            if (item) item.remove();
+        });
+        
+        mostrarMensagem("⚠️ Informe o salário para ver os valores monetários", "warning");
+        return;
+    }
+    
     // Calcular valor da hora (base: 220 horas mensais)
-    const valorHora = salario > 0 ? salario / 220 : 0;
+    const valorHora = salario / 220;
     
-    // Calcular horas normais (total horas - extras diárias - extras semanais)
-    // Mas precisamos considerar que extras diárias ainda são horas trabalhadas (banco de horas)
-    // e extras semanais são horas extras pagas
+    // CÁLCULO FLEXÍVEL PARA QUALQUER SALÁRIO:
+    // 1. Salário base é o valor que a pessoa DEVE receber se trabalhar 220h
+    // 2. Se trabalhar menos de 220h, desconta pelas horas faltantes
+    // 3. Se trabalhar mais de 220h (considerando extras), paga extras
     
-    // Horas normais são as horas até 8h por dia úteis e até 44h semanais
-    // Vamos estimar horas normais baseado no total
-    const horasMensaisEsperadas = 220; // 44h semanais × 5 semanas
-    const horasNormais = Math.min(totalHoras, horasMensaisEsperadas - faltas);
+    // Horas totais consideradas para pagamento (incluindo extras)
+    const horasParaPagamento = totalHoras;
     
-    // CORREÇÃO: O cálculo correto é:
-    // 1. Calcular valor das horas normais (até 220h no mês)
+    // Horas que deveriam ser trabalhadas no mês (220h)
+    const horasMensaisEsperadas = 220;
+    
+    // Calcular horas normais (até 220h)
+    const horasNormais = Math.min(horasParaPagamento, horasMensaisEsperadas);
+    
+    // Calcular horas extras (acima de 220h)
+    const horasExtrasPagas = Math.max(0, horasParaPagamento - horasMensaisEsperadas);
+    
+    // Cálculo dos valores:
+    // 1. Valor das horas normais (parte do salário base)
     const valorHorasNormais = horasNormais * valorHora;
     
-    // 2. Calcular valor das extras semanais (com 50% de adicional)
-    const valorExtrasSemanais = extrasSemanais * valorHora * 1.5;
+    // 2. Valor das horas extras (com 50% de adicional)
+    const valorExtras = horasExtrasPagas * valorHora * 1.5;
     
-    // 3. Calcular descontos por faltas
+    // 3. Descontos por faltas (quando trabalhou menos que 8h no dia)
     const valorDescontos = faltas * valorHora;
     
-    // 4. Total líquido = Horas normais + Extras semanais - Descontos
-    const totalLiquido = valorHorasNormais + valorExtrasSemanais - valorDescontos;
+    // 4. Total líquido = Salário base - Descontos + Valor Extras
+    const salarioAjustado = salario - valorDescontos;
+    const totalLiquido = salarioAjustado + valorExtras;
     
     // Atualizar elementos HTML
     document.getElementById("totalHoras").innerText = totalHoras.toFixed(2) + " h";
@@ -227,38 +259,9 @@ function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, fal
     document.getElementById("totalExtrasSemanais").innerText = extrasSemanais.toFixed(2) + " h";
     document.getElementById("totalFaltas").innerText = faltas.toFixed(2) + " h";
     document.getElementById("valorHora").innerText = formatarMoeda(valorHora);
-    document.getElementById("valorExtras").innerText = formatarMoeda(valorExtrasSemanais);
+    document.getElementById("valorExtras").innerText = formatarMoeda(valorExtras);
     document.getElementById("valorDescontos").innerText = formatarMoeda(valorDescontos);
     document.getElementById("totalLiquido").innerText = formatarMoeda(totalLiquido);
-    
-    // Mostrar horas normais também (adicional)
-    const resumoGrid = document.querySelector('.resumo-grid');
-    if (!document.getElementById('horasNormaisItem')) {
-        const horasNormaisItem = document.createElement('div');
-        horasNormaisItem.className = 'resumo-item';
-        horasNormaisItem.id = 'horasNormaisItem';
-        horasNormaisItem.innerHTML = `
-            <span class="resumo-label">Horas Normais:</span>
-            <span class="resumo-valor" id="horasNormaisValor">${horasNormais.toFixed(2)} h</span>
-        `;
-        resumoGrid.insertBefore(horasNormaisItem, resumoGrid.children[4]); // Inserir antes do valor hora
-    } else {
-        document.getElementById('horasNormaisValor').innerText = horasNormais.toFixed(2) + " h";
-    }
-    
-    // Adicionar valor horas normais
-    if (!document.getElementById('valorHorasNormaisItem')) {
-        const valorHorasNormaisItem = document.createElement('div');
-        valorHorasNormaisItem.className = 'resumo-item';
-        valorHorasNormaisItem.id = 'valorHorasNormaisItem';
-        valorHorasNormaisItem.innerHTML = `
-            <span class="resumo-label">Valor Horas Normais:</span>
-            <span class="resumo-valor" id="valorHorasNormais">${formatarMoeda(valorHorasNormais)}</span>
-        `;
-        resumoGrid.insertBefore(valorHorasNormaisItem, resumoGrid.children[5]); // Inserir antes do valor extras
-    } else {
-        document.getElementById('valorHorasNormais').innerText = formatarMoeda(valorHorasNormais);
-    }
     
     // Destacar o total líquido
     const totalLiquidoElement = document.getElementById("totalLiquido");
@@ -267,13 +270,74 @@ function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, fal
         totalLiquidoElement.style.animation = "";
     }, 500);
     
+    // Mostrar informações adicionais
+    const resumoGrid = document.querySelector('.resumo-grid');
+    
+    // Remover itens anteriores se existirem
+    const itensParaRemover = ['horasNormaisItem', 'horasExtrasItem', 'salarioBaseItem'];
+    itensParaRemover.forEach(id => {
+        const item = document.getElementById(id);
+        if (item) item.remove();
+    });
+    
+    // Adicionar item de horas normais
+    const horasNormaisItem = document.createElement('div');
+    horasNormaisItem.className = 'resumo-item';
+    horasNormaisItem.id = 'horasNormaisItem';
+    horasNormaisItem.innerHTML = `
+        <span class="resumo-label">Horas Normais:</span>
+        <span class="resumo-valor" id="horasNormaisValor">${horasNormais.toFixed(2)} h</span>
+    `;
+    resumoGrid.insertBefore(horasNormaisItem, resumoGrid.children[4]);
+    
+    // Adicionar item de horas extras
+    const horasExtrasItem = document.createElement('div');
+    horasExtrasItem.className = 'resumo-item';
+    horasExtrasItem.id = 'horasExtrasItem';
+    horasExtrasItem.innerHTML = `
+        <span class="resumo-label">Horas Extras Pagas:</span>
+        <span class="resumo-valor" id="horasExtrasValor">${horasExtrasPagas.toFixed(2)} h</span>
+    `;
+    resumoGrid.insertBefore(horasExtrasItem, resumoGrid.children[5]);
+    
+    // Adicionar item de salário base
+    const salarioBaseItem = document.createElement('div');
+    salarioBaseItem.className = 'resumo-item';
+    salarioBaseItem.id = 'salarioBaseItem';
+    salarioBaseItem.innerHTML = `
+        <span class="resumo-label">Salário Base:</span>
+        <span class="resumo-valor" id="salarioBaseValor">${formatarMoeda(salario)}</span>
+    `;
+    resumoGrid.insertBefore(salarioBaseItem, resumoGrid.children[6]);
+    
+    // Estilizar os novos itens
+    document.getElementById('horasNormaisValor').style.color = '#3b82f6';
+    document.getElementById('horasNormaisValor').style.background = '#dbeafe';
+    document.getElementById('horasExtrasValor').style.color = '#f59e0b';
+    document.getElementById('horasExtrasValor').style.background = '#fef3c7';
+    document.getElementById('salarioBaseValor').style.color = '#10b981';
+    document.getElementById('salarioBaseValor').style.background = '#d1fae5';
+    
     // Mostrar mensagem se houver extras ou faltas significativas
-    if (extrasSemanais > 10) {
-        mostrarMensagem(`⚠️ Atenção: ${extrasSemanais.toFixed(2)} horas extras este mês!`, "warning");
+    if (horasExtrasPagas > 10) {
+        mostrarMensagem(`⚠️ Atenção: ${horasExtrasPagas.toFixed(2)} horas extras para pagamento!`, "warning");
     }
     
     if (faltas > 8) {
-        mostrarMensagem(`⚠️ Atenção: ${faltas.toFixed(2)} horas faltantes este mês!`, "error");
+        mostrarMensagem(`⚠️ Atenção: ${faltas.toFixed(2)} horas faltantes com desconto!`, "error");
+    }
+    
+    // Mostrar balanço geral
+    if (totalHoras < 220) {
+        const horasFaltando = 220 - totalHoras;
+        const valorFaltando = horasFaltando * valorHora;
+        mostrarMensagem(`📉 Está faltando ${horasFaltando.toFixed(2)} horas (${formatarMoeda(valorFaltando)}) para completar as 220h mensais`, "warning");
+    } else if (totalHoras > 220) {
+        const horasExcedentes = totalHoras - 220;
+        const valorExcedente = horasExcedentes * valorHora * 1.5;
+        mostrarMensagem(`📈 Horas excedentes: ${horasExcedentes.toFixed(2)}h (${formatarMoeda(valorExcedente)}) serão pagas como extras`, "success");
+    } else {
+        mostrarMensagem(`✅ Horas completas! Trabalhou exatas 220h este mês`, "success");
     }
 }
 
@@ -291,9 +355,9 @@ function resetarResumo() {
     document.getElementById("totalLiquido").innerText = "R$ 0,00";
     
     // Remover itens adicionados
-    const horasNormaisItem = document.getElementById('horasNormaisItem');
-    if (horasNormaisItem) horasNormaisItem.remove();
-    
-    const valorHorasNormaisItem = document.getElementById('valorHorasNormaisItem');
-    if (valorHorasNormaisItem) valorHorasNormaisItem.remove();
+    const itensParaRemover = ['horasNormaisItem', 'horasExtrasItem', 'salarioBaseItem'];
+    itensParaRemover.forEach(id => {
+        const item = document.getElementById(id);
+        if (item) item.remove();
+    });
 }
