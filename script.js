@@ -1,14 +1,17 @@
-// CONFIGURAÇÕES
 const CARGA_DIARIA = 8;
-const DIAS_MES = 22;
 
-// Converte hora HH:MM → decimal
+// Utilidades
 function horaParaDecimal(h) {
     const [hh, mm] = h.split(":").map(Number);
     return hh + (mm / 60);
 }
 
-// Calcula um dia (4 batidas)
+// Quantos dias tem o mês
+function diasNoMes(mes, ano) {
+    return new Date(ano, mes + 1, 0).getDate();
+}
+
+// Calcula um dia
 function calcularDia(e1, s1, e2, s2) {
     if (!e1 || !s1 || !e2 || !s2) {
         return { trabalhadas: 0, extra: 0, falta: 0 };
@@ -23,11 +26,8 @@ function calcularDia(e1, s1, e2, s2) {
     let extra = 0;
     let falta = 0;
 
-    if (total > CARGA_DIARIA) {
-        extra = total - CARGA_DIARIA;
-    } else if (total < CARGA_DIARIA) {
-        falta = CARGA_DIARIA - total;
-    }
+    if (total > CARGA_DIARIA) extra = total - CARGA_DIARIA;
+    else if (total < CARGA_DIARIA) falta = CARGA_DIARIA - total;
 
     return { trabalhadas: total, extra, falta };
 }
@@ -39,43 +39,83 @@ function calcularValorHora() {
     return salario / 220;
 }
 
-// Gera dias do mês (22 dias úteis)
-function gerarTabela() {
-    const tbody = document.getElementById("tabelaDias");
+// Preenche selects
+function inicializarPeriodo() {
+    const hoje = new Date();
+    const selectMes = document.getElementById("mes");
+    const selectAno = document.getElementById("ano");
 
-    for (let i = 1; i <= DIAS_MES; i++) {
+    const meses = [
+        "Janeiro","Fevereiro","Março","Abril","Maio","Junho",
+        "Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"
+    ];
+
+    meses.forEach((m, i) => {
+        const opt = document.createElement("option");
+        opt.value = i;
+        opt.text = m;
+        if (i === hoje.getMonth()) opt.selected = true;
+        selectMes.appendChild(opt);
+    });
+
+    for (let a = 2024; a <= 2030; a++) {
+        const opt = document.createElement("option");
+        opt.value = a;
+        opt.text = a;
+        if (a === hoje.getFullYear()) opt.selected = true;
+        selectAno.appendChild(opt);
+    }
+
+    selectMes.onchange = gerarTabela;
+    selectAno.onchange = gerarTabela;
+}
+
+// Gera tabela conforme mês/ano
+function gerarTabela() {
+    const mes = Number(document.getElementById("mes").value);
+    const ano = Number(document.getElementById("ano").value);
+    const totalDias = diasNoMes(mes, ano);
+
+    const tbody = document.getElementById("tabelaDias");
+    tbody.innerHTML = "";
+
+    for (let d = 1; d <= totalDias; d++) {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>Dia ${i}</td>
-            <td><input type="time" id="e1_${i}"></td>
-            <td><input type="time" id="s1_${i}"></td>
-            <td><input type="time" id="e2_${i}"></td>
-            <td><input type="time" id="s2_${i}"></td>
-            <td id="trab_${i}">0</td>
-            <td id="extra_${i}">0</td>
-            <td id="falta_${i}">0</td>
+            <td>${d}</td>
+            <td><input type="time" id="e1_${d}"></td>
+            <td><input type="time" id="s1_${d}"></td>
+            <td><input type="time" id="e2_${d}"></td>
+            <td><input type="time" id="s2_${d}"></td>
+            <td id="trab_${d}">0</td>
+            <td id="extra_${d}">0</td>
+            <td id="falta_${d}">0</td>
         `;
         tbody.appendChild(tr);
     }
 }
 
-// Calcula mês inteiro
+// Calcula mês
 function calcularMesUI() {
+    const mes = Number(document.getElementById("mes").value);
+    const ano = Number(document.getElementById("ano").value);
+    const totalDias = diasNoMes(mes, ano);
+
     let totalHoras = 0;
     let totalExtra = 0;
     let totalFalta = 0;
 
-    for (let i = 1; i <= DIAS_MES; i++) {
+    for (let d = 1; d <= totalDias; d++) {
         const r = calcularDia(
-            document.getElementById(`e1_${i}`).value,
-            document.getElementById(`s1_${i}`).value,
-            document.getElementById(`e2_${i}`).value,
-            document.getElementById(`s2_${i}`).value
+            document.getElementById(`e1_${d}`).value,
+            document.getElementById(`s1_${d}`).value,
+            document.getElementById(`e2_${d}`).value,
+            document.getElementById(`s2_${d}`).value
         );
 
-        document.getElementById(`trab_${i}`).innerText = r.trabalhadas.toFixed(2);
-        document.getElementById(`extra_${i}`).innerText = r.extra.toFixed(2);
-        document.getElementById(`falta_${i}`).innerText = r.falta.toFixed(2);
+        document.getElementById(`trab_${d}`).innerText = r.trabalhadas.toFixed(2);
+        document.getElementById(`extra_${d}`).innerText = r.extra.toFixed(2);
+        document.getElementById(`falta_${d}`).innerText = r.falta.toFixed(2);
 
         totalHoras += r.trabalhadas;
         totalExtra += r.extra;
@@ -83,16 +123,14 @@ function calcularMesUI() {
     }
 
     const valorHora = calcularValorHora();
-    const valorExtra = totalExtra * valorHora * 1.5;
-    const valorDesconto = totalFalta * valorHora;
-
     document.getElementById("valorHora").innerText = valorHora.toFixed(2);
     document.getElementById("totalMes").innerText = totalHoras.toFixed(2);
     document.getElementById("extraMes").innerText = totalExtra.toFixed(2);
     document.getElementById("faltaMes").innerText = totalFalta.toFixed(2);
-    document.getElementById("valorExtra").innerText = valorExtra.toFixed(2);
-    document.getElementById("valorDesconto").innerText = valorDesconto.toFixed(2);
+    document.getElementById("valorExtra").innerText = (totalExtra * valorHora * 1.5).toFixed(2);
+    document.getElementById("valorDesconto").innerText = (totalFalta * valorHora).toFixed(2);
 }
 
-// Inicializa
+// Inicialização
+inicializarPeriodo();
 gerarTabela();
