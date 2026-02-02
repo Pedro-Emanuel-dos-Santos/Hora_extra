@@ -1,22 +1,19 @@
 body {
     font-family: Arial, Helvetica, sans-serif;
     background: #f4f6f8;
-    margin: 0;
-    padding: 0;
 }
 
 .container {
-    max-width: 1200px;
-    margin: 40px auto;
-    background: #ffffff;
-    padding: 30px;
+    max-width: 1300px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 25px;
     border-radius: 8px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 25px;
     color: #1f2937;
 }
 
@@ -27,27 +24,21 @@ h1 {
     margin-bottom: 20px;
 }
 
-.financeiro input {
-    padding: 8px;
-    margin-left: 10px;
-    width: 160px;
-}
-
 table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 13px;
 }
 
 th, td {
-    padding: 8px;
+    padding: 6px;
     text-align: center;
     border-bottom: 1px solid #e5e7eb;
 }
 
 th {
     background: #1f2937;
-    color: #ffffff;
+    color: white;
 }
 
 input[type="time"] {
@@ -56,7 +47,9 @@ input[type="time"] {
 
 .resumo {
     margin-top: 20px;
-    font-size: 16px;
+    background: #f8fafc;
+    padding: 15px;
+    border-radius: 6px;
 }
 
 button {
@@ -64,13 +57,9 @@ button {
     width: 100%;
     padding: 12px;
     background: #2563eb;
-    color: #ffffff;
+    color: white;
     border: none;
     border-radius: 6px;
     font-size: 16px;
     cursor: pointer;
-}
-
-button:hover {
-    background: #1d4ed8;
 }

@@ -2,13 +2,13 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Controle de Horas – RH</title>
+    <title>Controle de Horas – RH (Mensal)</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="container">
-    <h1>Controle de Horas – RH</h1>
+    <h1>Controle de Horas – Fechamento Mensal</h1>
 
     <div class="financeiro">
         <label>Salário Mensal (R$):</label>
@@ -33,14 +33,15 @@
     </table>
 
     <div class="resumo">
-        <p><strong>Total da Semana:</strong> <span id="totalSemana">0</span> h</p>
-        <p><strong>Horas Extras:</strong> <span id="extraSemana">0</span> h</p>
-        <p><strong>Horas Faltantes:</strong> <span id="faltaSemana">0</span> h</p>
-        <p><strong>Total Extras (R$):</strong> R$ <span id="valorExtra">0.00</span></p>
-        <p><strong>Total Descontos (R$):</strong> R$ <span id="valorDesconto">0.00</span></p>
+        <h3>Resumo Mensal</h3>
+        <p><strong>Total Trabalhado:</strong> <span id="totalMes">0</span> h</p>
+        <p><strong>Total Extras:</strong> <span id="extraMes">0</span> h</p>
+        <p><strong>Total Faltas:</strong> <span id="faltaMes">0</span> h</p>
+        <p><strong>Valor Extras (R$):</strong> R$ <span id="valorExtra">0.00</span></p>
+        <p><strong>Desconto Faltas (R$):</strong> R$ <span id="valorDesconto">0.00</span></p>
     </div>
 
-    <button onclick="calcularSemanaUI()">Calcular Semana</button>
+    <button onclick="calcularMesUI()">Calcular Mês</button>
 </div>
 
 <script src="script.js"></script>

@@ -1,23 +1,23 @@
 // CONFIGURAÇÕES
 const CARGA_DIARIA = 8;
-const CARGA_SEMANAL = 40;
+const DIAS_MES = 22;
 
-// Converte HH:MM para decimal
-function horaParaDecimal(hora) {
-    const [h, m] = hora.split(":").map(Number);
-    return h + (m / 60);
+// Converte hora HH:MM → decimal
+function horaParaDecimal(h) {
+    const [hh, mm] = h.split(":").map(Number);
+    return hh + (mm / 60);
 }
 
-// Calcula horas de UM DIA (4 batidas)
+// Calcula um dia (4 batidas)
 function calcularDia(e1, s1, e2, s2) {
     if (!e1 || !s1 || !e2 || !s2) {
         return { trabalhadas: 0, extra: 0, falta: 0 };
     }
 
-    const periodoManha = horaParaDecimal(s1) - horaParaDecimal(e1);
-    const periodoTarde = horaParaDecimal(s2) - horaParaDecimal(e2);
+    const manha = horaParaDecimal(s1) - horaParaDecimal(e1);
+    const tarde = horaParaDecimal(s2) - horaParaDecimal(e2);
 
-    let total = periodoManha + periodoTarde;
+    let total = manha + tarde;
     if (total < 0) total = 0;
 
     let extra = 0;
@@ -32,22 +32,21 @@ function calcularDia(e1, s1, e2, s2) {
     return { trabalhadas: total, extra, falta };
 }
 
-// Valor da hora
+// Valor hora
 function calcularValorHora() {
     const salario = Number(document.getElementById("salario").value);
     if (!salario) return 0;
     return salario / 220;
 }
 
-// Gera tabela
+// Gera dias do mês (22 dias úteis)
 function gerarTabela() {
-    const dias = ["Seg", "Ter", "Qua", "Qui", "Sex"];
     const tbody = document.getElementById("tabelaDias");
 
-    dias.forEach((dia, i) => {
+    for (let i = 1; i <= DIAS_MES; i++) {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-            <td>${dia}</td>
+            <td>Dia ${i}</td>
             <td><input type="time" id="e1_${i}"></td>
             <td><input type="time" id="s1_${i}"></td>
             <td><input type="time" id="e2_${i}"></td>
@@ -57,16 +56,16 @@ function gerarTabela() {
             <td id="falta_${i}">0</td>
         `;
         tbody.appendChild(tr);
-    });
+    }
 }
 
-// Calcula semana
-function calcularSemanaUI() {
+// Calcula mês inteiro
+function calcularMesUI() {
     let totalHoras = 0;
     let totalExtra = 0;
     let totalFalta = 0;
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 1; i <= DIAS_MES; i++) {
         const r = calcularDia(
             document.getElementById(`e1_${i}`).value,
             document.getElementById(`s1_${i}`).value,
@@ -88,9 +87,9 @@ function calcularSemanaUI() {
     const valorDesconto = totalFalta * valorHora;
 
     document.getElementById("valorHora").innerText = valorHora.toFixed(2);
-    document.getElementById("totalSemana").innerText = totalHoras.toFixed(2);
-    document.getElementById("extraSemana").innerText = totalExtra.toFixed(2);
-    document.getElementById("faltaSemana").innerText = totalFalta.toFixed(2);
+    document.getElementById("totalMes").innerText = totalHoras.toFixed(2);
+    document.getElementById("extraMes").innerText = totalExtra.toFixed(2);
+    document.getElementById("faltaMes").innerText = totalFalta.toFixed(2);
     document.getElementById("valorExtra").innerText = valorExtra.toFixed(2);
     document.getElementById("valorDesconto").innerText = valorDesconto.toFixed(2);
 }
