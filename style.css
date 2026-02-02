@@ -43,17 +43,34 @@ table th {
     background: #e9ecef;
 }
 
+/* Domingo */
+.domingo {
+    background-color: #ffe0e0;
+}
+
+.domingo td {
+    color: #a10000;
+    font-weight: bold;
+}
+
+/* Sábado */
+.sabado {
+    background-color: #fff3cd;
+}
+
+.sabado td {
+    color: #8a6d00;
+    font-weight: bold;
+}
+
+/* Dia da semana em destaque */
+.dia-semana {
+    text-transform: uppercase;
+}
+
 .resumo {
     margin-top: 20px;
     background: #ffffff;
     padding: 15px;
     border-radius: 6px;
-}
-
-.domingo {
-    background: #ffe5e5;
-}
-
-.sabado {
-    background: #fff4cc;
 }

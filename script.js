@@ -1,4 +1,12 @@
-const diasSemana = ["Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"];
+const diasSemana = [
+    "Domingo",
+    "Segunda",
+    "Terça",
+    "Quarta",
+    "Quinta",
+    "Sexta",
+    "Sábado"
+];
 
 function preencherSelects() {
     const mes = document.getElementById("mes");
@@ -21,6 +29,7 @@ function gerarCalendario() {
     const mes = Number(document.getElementById("mes").value);
     const ano = Number(document.getElementById("ano").value);
     const tbody = document.getElementById("corpoTabela");
+
     tbody.innerHTML = "";
 
     const diasMes = new Date(ano, mes + 1, 0).getDate();
@@ -30,12 +39,13 @@ function gerarCalendario() {
         const diaSemana = data.getDay();
 
         const tr = document.createElement("tr");
+
         if (diaSemana === 0) tr.classList.add("domingo");
         if (diaSemana === 6) tr.classList.add("sabado");
 
         tr.innerHTML = `
             <td>${dia}/${mes + 1}/${ano}</td>
-            <td>${diasSemana[diaSemana]}</td>
+            <td class="dia-semana">${diasSemana[diaSemana]}</td>
             <td><input type="time"></td>
             <td><input type="time"></td>
             <td><input type="time"></td>
@@ -51,7 +61,10 @@ function gerarCalendario() {
 
 function calcularMes() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
-    let total = 0, extra = 0, falta = 0;
+
+    let total = 0;
+    let extra = 0;
+    let falta = 0;
 
     linhas.forEach(linha => {
         const inputs = linha.querySelectorAll("input");
@@ -70,12 +83,17 @@ function calcularMes() {
         const horas = minutos / 60;
         linha.querySelector(".trab").innerText = horas.toFixed(2);
 
-        const dia = linha.children[1].innerText;
+        const diaSemana = linha.querySelector(".dia-semana").innerText;
 
         if (horas > 8) {
             linha.querySelector(".extra").innerText = (horas - 8).toFixed(2);
             extra += horas - 8;
-        } else if (horas < 8 && dia !== "Sábado" && dia !== "Domingo") {
+        } 
+        else if (
+            horas < 8 &&
+            diaSemana !== "SÁBADO" &&
+            diaSemana !== "DOMINGO"
+        ) {
             linha.querySelector(".falta").innerText = (8 - horas).toFixed(2);
             falta += 8 - horas;
         }
