@@ -245,4 +245,60 @@ input[type="time"]:focus {
         display: block;
         overflow-x: auto;
     }
+
+}/* Adicionar na seção de botões no .topo */
+.topo button:nth-child(5) {
+    background: #9b59b6; /* Roxo para Preencher Horários Padrão */
+}
+
+.topo button:nth-child(5):hover {
+    background: #8e44ad;
+}
+
+.topo button:nth-child(6) {
+    background: #e74c3c; /* Vermelho para Limpar Horários */
+}
+
+.topo button:nth-child(6):hover {
+    background: #c0392b;
+}
+
+.topo button:nth-child(7) {
+    background: #2ecc71; /* Verde para Calcular Mês */
+}
+
+.topo button:nth-child(7):hover {
+    background: #27ae60;
+}
+
+/* Tooltip para os botões */
+.topo button {
+    position: relative;
+}
+
+.topo button:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: -35px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    z-index: 100;
+}
+
+.topo button:hover::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #333 transparent;
+    z-index: 100;
 }

@@ -1,4 +1,3 @@
-<!-- index.html - VERSÃO MELHORADA -->
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -6,31 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Controle Mensal de Horas - RH</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
 <div class="container">
-    <h1><i class="fas fa-clock"></i> Controle Mensal de Horas</h1>
+    <h1>📅 Controle Mensal de Horas - RH</h1>
 
     <div class="topo">
         <div class="controle">
-            <label for="mes"><i class="fas fa-calendar-alt"></i> Mês:</label>
+            <label for="mes">Mês:</label>
             <select id="mes"></select>
         </div>
 
         <div class="controle">
-            <label for="ano"><i class="fas fa-calendar"></i> Ano:</label>
+            <label for="ano">Ano:</label>
             <select id="ano"></select>
         </div>
 
         <div class="controle">
-            <label for="salario"><i class="fas fa-money-bill-wave"></i> Salário (R$):</label>
+            <label for="salario">Salário (R$):</label>
             <input type="number" id="salario" placeholder="Ex: 2500" min="0" step="0.01">
         </div>
 
-        <button onclick="gerarCalendario()"><i class="fas fa-calendar-plus"></i> Gerar Mês</button>
-        <button onclick="calcularMes()"><i class="fas fa-calculator"></i> Calcular Mês</button>
+        <button onclick="gerarCalendario()">📋 Gerar Mês</button>
+        <button onclick="preencherHorariosPadrao()">🕒 Preencher Horários Padrão</button>
+        <button onclick="limparHorarios()">🗑️ Limpar Horários</button>
+        <button onclick="calcularMes()">🧮 Calcular Mês</button>
     </div>
 
     <div class="tabela-container">
@@ -38,13 +38,14 @@
             <thead>
                 <tr>
                     <th>Data</th>
-                    <th>Dia da Semana</th>
+                    <th>Dia</th>
                     <th>Entrada</th>
                     <th>Saída</th>
                     <th>Entrada</th>
                     <th>Saída</th>
                     <th>Trabalhado</th>
-                    <th>Extra</th>
+                    <th>Extra (Banco)</th>
+                    <th>Extra (Paga)</th>
                     <th>Falta</th>
                 </tr>
             </thead>
@@ -53,19 +54,33 @@
     </div>
 
     <div class="resumo">
-        <h2><i class="fas fa-chart-bar"></i> Resumo Mensal</h2>
+        <h2>📊 Resumo Mensal</h2>
         <p>Total Trabalhado: <span id="totalHoras">0</span> h</p>
-        <p>Horas Extras: <span id="totalExtras">0</span> h</p>
+        <p>Extras Diárias (Banco): <span id="totalExtrasDiarias">0</span> h</p>
+        <p>Extras Semanais (Pagas): <span id="totalExtrasSemanais">0</span> h</p>
         <p>Horas Faltantes: <span id="totalFaltas">0</span> h</p>
         <p>Valor Hora: R$ <span id="valorHora">0.00</span></p>
-        <p>Valor Extras: R$ <span id="valorExtras">0.00</span></p>
+        <p>Valor Extras (Pagas): R$ <span id="valorExtras">0.00</span></p>
         <p>Descontos: R$ <span id="valorDescontos">0.00</span></p>
+        <p>Total Líquido: R$ <span id="totalLiquido">0.00</span></p>
     </div>
 
     <div class="legenda">
-        <p><span class="legenda-item domingo-legenda">DOMINGO</span> - Dia não útil</p>
-        <p><span class="legenda-item sabado-legenda">SÁBADO</span> - Dia útil com regras especiais</p>
-        <p><i class="fas fa-info-circle"></i> Para fins de semana, todo trabalho é considerado hora extra</p>
+        <div class="legenda-item" style="background-color: #ffe0e0;">
+            <span class="cor-domingo"></span> DOMINGO - Dia não útil
+        </div>
+        <div class="legenda-item" style="background-color: #fff3cd;">
+            <span class="cor-sabado"></span> SÁBADO - Dia útil com regras especiais
+        </div>
+        <div class="legenda-item">
+            <span class="cor-extra-banco"></span> Extra (Banco) - Acima de 8h/dia
+        </div>
+        <div class="legenda-item">
+            <span class="cor-extra-paga"></span> Extra (Paga) - Acima de 44h/semana
+        </div>
+        <p><i>💡 Para fins de semana, todo trabalho é considerado hora extra paga</i></p>
+        <p><i>💡 Sistema calcula: 1h extra paga por semana (45h - 44h legais)</i></p>
+        <p><i>💡 <strong>Botão "Preencher Horários Padrão":</strong> Preenche automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis</i></p>
     </div>
 </div>
 
