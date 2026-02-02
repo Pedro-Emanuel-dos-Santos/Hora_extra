@@ -6,7 +6,7 @@ body {
 }
 
 .container {
-    max-width: 1000px;
+    max-width: 1200px;
     margin: 40px auto;
     background: #ffffff;
     padding: 30px;
@@ -36,10 +36,11 @@ h1 {
 table {
     width: 100%;
     border-collapse: collapse;
+    font-size: 14px;
 }
 
 th, td {
-    padding: 10px;
+    padding: 8px;
     text-align: center;
     border-bottom: 1px solid #e5e7eb;
 }
@@ -50,16 +51,12 @@ th {
 }
 
 input[type="time"] {
-    padding: 5px;
+    padding: 4px;
 }
 
 .resumo {
     margin-top: 20px;
     font-size: 16px;
-}
-
-.resumo p {
-    margin: 6px 0;
 }
 
 button {

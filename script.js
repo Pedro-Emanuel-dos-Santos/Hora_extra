@@ -1,7 +1,6 @@
 // CONFIGURAÇÕES
 const CARGA_DIARIA = 8;
 const CARGA_SEMANAL = 40;
-const ALMOCO_HORAS = 1.5;
 
 // Converte HH:MM para decimal
 function horaParaDecimal(hora) {
@@ -9,13 +8,16 @@ function horaParaDecimal(hora) {
     return h + (m / 60);
 }
 
-// Calcula horas de um dia
-function calcularDia(entrada, saida) {
-    if (!entrada || !saida) {
+// Calcula horas de UM DIA (4 batidas)
+function calcularDia(e1, s1, e2, s2) {
+    if (!e1 || !s1 || !e2 || !s2) {
         return { trabalhadas: 0, extra: 0, falta: 0 };
     }
 
-    let total = horaParaDecimal(saida) - horaParaDecimal(entrada) - ALMOCO_HORAS;
+    const periodoManha = horaParaDecimal(s1) - horaParaDecimal(e1);
+    const periodoTarde = horaParaDecimal(s2) - horaParaDecimal(e2);
+
+    let total = periodoManha + periodoTarde;
     if (total < 0) total = 0;
 
     let extra = 0;
@@ -30,51 +32,55 @@ function calcularDia(entrada, saida) {
     return { trabalhadas: total, extra, falta };
 }
 
-// Valor da hora (salário / 220)
+// Valor da hora
 function calcularValorHora() {
     const salario = Number(document.getElementById("salario").value);
     if (!salario) return 0;
     return salario / 220;
 }
 
-// Gera tabela semanal
+// Gera tabela
 function gerarTabela() {
     const dias = ["Seg", "Ter", "Qua", "Qui", "Sex"];
     const tbody = document.getElementById("tabelaDias");
 
-    dias.forEach((dia, index) => {
+    dias.forEach((dia, i) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
             <td>${dia}</td>
-            <td><input type="time" id="entrada${index}"></td>
-            <td><input type="time" id="saida${index}"></td>
-            <td id="trab${index}">0</td>
-            <td id="extra${index}">0</td>
-            <td id="falta${index}">0</td>
+            <td><input type="time" id="e1_${i}"></td>
+            <td><input type="time" id="s1_${i}"></td>
+            <td><input type="time" id="e2_${i}"></td>
+            <td><input type="time" id="s2_${i}"></td>
+            <td id="trab_${i}">0</td>
+            <td id="extra_${i}">0</td>
+            <td id="falta_${i}">0</td>
         `;
         tbody.appendChild(tr);
     });
 }
 
-// Calcula semana + valores
+// Calcula semana
 function calcularSemanaUI() {
     let totalHoras = 0;
     let totalExtra = 0;
     let totalFalta = 0;
 
     for (let i = 0; i < 5; i++) {
-        const entrada = document.getElementById(`entrada${i}`).value;
-        const saida = document.getElementById(`saida${i}`).value;
+        const r = calcularDia(
+            document.getElementById(`e1_${i}`).value,
+            document.getElementById(`s1_${i}`).value,
+            document.getElementById(`e2_${i}`).value,
+            document.getElementById(`s2_${i}`).value
+        );
 
-        const resultado = calcularDia(entrada, saida);
+        document.getElementById(`trab_${i}`).innerText = r.trabalhadas.toFixed(2);
+        document.getElementById(`extra_${i}`).innerText = r.extra.toFixed(2);
+        document.getElementById(`falta_${i}`).innerText = r.falta.toFixed(2);
 
-        document.getElementById(`trab${i}`).innerText = resultado.trabalhadas.toFixed(2);
-        document.getElementById(`extra${i}`).innerText = resultado.extra.toFixed(2);
-        document.getElementById(`falta${i}`).innerText = resultado.falta.toFixed(2);
-
-        totalHoras += resultado.trabalhadas;
-        totalExtra += resultado.extra;
-        totalFalta += resultado.falta;
+        totalHoras += r.trabalhadas;
+        totalExtra += r.extra;
+        totalFalta += r.falta;
     }
 
     const valorHora = calcularValorHora();
@@ -89,5 +95,5 @@ function calcularSemanaUI() {
     document.getElementById("valorDesconto").innerText = valorDesconto.toFixed(2);
 }
 
-// Inicializa sistema
+// Inicializa
 gerarTabela();
