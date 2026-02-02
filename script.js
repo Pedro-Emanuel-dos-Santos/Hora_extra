@@ -1,9 +1,8 @@
 // ============================================
 // SISTEMA DE CONTROLE DE HORAS - RH
-// Versão Final com Preenchimento Automático
+// Versão com Extra 50% e 100%
 // ============================================
 
-// Array com nomes dos dias da semana
 const diasSemana = [
     "Domingo",
     "Segunda",
@@ -18,18 +17,13 @@ const diasSemana = [
 // 1. INICIALIZAÇÃO DO SISTEMA
 // ============================================
 
-/**
- * Preenche os selects de mês e ano com valores
- */
 function preencherSelects() {
     const mesSelect = document.getElementById("mes");
     const anoSelect = document.getElementById("ano");
 
-    // Limpar selects existentes
     mesSelect.innerHTML = '';
     anoSelect.innerHTML = '';
 
-    // Preencher meses (1 a 12)
     for (let i = 0; i < 12; i++) {
         const data = new Date(2024, i, 1);
         const nomeMes = data.toLocaleDateString('pt-BR', { month: 'long' });
@@ -37,27 +31,20 @@ function preencherSelects() {
         mesSelect.innerHTML += `<option value="${i}">${nomeMesFormatado}</option>`;
     }
 
-    // Preencher anos (ano atual -1 até +2)
     const anoAtual = new Date().getFullYear();
     for (let i = anoAtual - 1; i <= anoAtual + 2; i++) {
         anoSelect.innerHTML += `<option value="${i}">${i}</option>`;
     }
 
-    // Definir valores padrão (mês e ano atual)
     mesSelect.value = new Date().getMonth();
     anoSelect.value = anoAtual;
 }
 
-/**
- * Inicializa o sistema quando a página carrega
- */
 window.onload = function() {
     preencherSelects();
     
-    // Gerar calendário automaticamente após pequeno delay
     setTimeout(() => {
         gerarCalendario();
-        // Preencher salário com valor exemplo
         document.getElementById("salario").value = "2500";
     }, 100);
 };
@@ -66,47 +53,37 @@ window.onload = function() {
 // 2. CONTROLE DO CALENDÁRIO
 // ============================================
 
-/**
- * Gera o calendário do mês selecionado
- */
 function gerarCalendario() {
     const mes = Number(document.getElementById("mes").value);
     const ano = Number(document.getElementById("ano").value);
     const tbody = document.getElementById("corpoTabela");
 
-    // Validar mês e ano
     if (isNaN(mes) || isNaN(ano)) {
         mostrarMensagem("❌ Por favor, selecione um mês e ano válidos!", "error");
         return;
     }
 
-    // Limpar tabela existente
     tbody.innerHTML = "";
 
-    // Obter número de dias no mês
     const diasMes = new Date(ano, mes + 1, 0).getDate();
 
-    // Criar uma linha para cada dia do mês
     for (let dia = 1; dia <= diasMes; dia++) {
         const data = new Date(ano, mes, dia);
         const diaSemana = data.getDay();
         const nomeDiaSemana = diasSemana[diaSemana];
         
-        // Formatar data no padrão brasileiro (DD/MM/AAAA)
         const dataFormatada = dia.toString().padStart(2, '0') + '/' + 
                              (mes + 1).toString().padStart(2, '0') + '/' + 
                              ano;
 
         const tr = document.createElement("tr");
 
-        // Adicionar classes CSS para sábado e domingo
         if (diaSemana === 0) {
             tr.classList.add("domingo");
         } else if (diaSemana === 6) {
             tr.classList.add("sabado");
         }
 
-        // Criar HTML da linha da tabela SEM preencher automaticamente
         tr.innerHTML = `
             <td><strong>${dataFormatada}</strong></td>
             <td class="dia-semana" data-diasemana="${diaSemana}">${nomeDiaSemana.toUpperCase()}</td>
@@ -116,17 +93,16 @@ function gerarCalendario() {
             <td><input type="time" class="saida2" onchange="validarHorario(this)"></td>
             <td class="trab">0.00</td>
             <td class="extra-diaria">0.00</td>
-            <td class="extra-semanal">0.00</td>
+            <td class="extra-50">0.00</td>
+            <td class="extra-100">0.00</td>
             <td class="falta">0.00</td>
         `;
 
         tbody.appendChild(tr);
     }
     
-    // Mostrar mensagem informativa
     mostrarMensagem(`📅 Calendário gerado com ${diasMes} dias!<br><small>Use "Preencher Horários Padrão" para preencher automaticamente.</small>`, "info");
     
-    // Calcular automaticamente (vai mostrar zeros)
     setTimeout(() => calcularMes(), 500);
 }
 
@@ -134,10 +110,6 @@ function gerarCalendario() {
 // 3. FUNÇÕES DE PREENCHIMENTO AUTOMÁTICO
 // ============================================
 
-/**
- * Preenche automaticamente os horários padrão da empresa
- * 07:30-12:00 e 13:30-18:00 para dias úteis
- */
 function preencherHorariosPadrao() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
     
@@ -152,33 +124,25 @@ function preencherHorariosPadrao() {
         const diaSemana = parseInt(linha.querySelector(".dia-semana").getAttribute("data-diasemana"));
         const isFimDeSemana = diaSemana === 0 || diaSemana === 6;
         
-        // Apenas para dias úteis (segunda a sexta)
         if (!isFimDeSemana) {
             const inputs = linha.querySelectorAll("input[type='time']");
             
-            // Preencher com horários padrão da empresa
-            inputs[0].value = "07:30"; // Entrada manhã
-            inputs[1].value = "12:00"; // Saída manhã
-            inputs[2].value = "13:30"; // Entrada tarde
-            inputs[3].value = "18:00"; // Saída tarde
+            inputs[0].value = "07:30";
+            inputs[1].value = "12:00";
+            inputs[2].value = "13:30";
+            inputs[3].value = "18:00";
             
-            // Destacar visualmente que foi preenchido
             destaqueLinha(linha, "#e8f6f3");
             
             diasPreenchidos++;
         }
     });
     
-    // Calcular automaticamente após preencher
     setTimeout(() => calcularMes(), 300);
     
-    // Mostrar mensagem de confirmação
     mostrarMensagem(`✅ Horários padrão preenchidos em ${diasPreenchidos} dias úteis!<br><small>07:30-12:00 e 13:30-18:00</small>`, "success");
 }
 
-/**
- * Limpa todos os horários da tabela
- */
 function limparHorarios() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
     
@@ -187,7 +151,6 @@ function limparHorarios() {
         return;
     }
     
-    // Confirmar antes de limpar
     if (!confirm("⚠️ Tem certeza que deseja limpar TODOS os horários?\nIsso não pode ser desfeito.")) {
         return;
     }
@@ -197,168 +160,221 @@ function limparHorarios() {
     linhas.forEach(linha => {
         const inputs = linha.querySelectorAll("input[type='time']");
         
-        // Limpar todos os inputs de horário
         inputs.forEach(input => {
             input.value = "";
         });
         
-        // Resetar células de cálculo
         linha.querySelector(".trab").innerText = "0.00";
         linha.querySelector(".extra-diaria").innerText = "0.00";
-        linha.querySelector(".extra-semanal").innerText = "0.00";
+        linha.querySelector(".extra-50").innerText = "0.00";
+        linha.querySelector(".extra-100").innerText = "0.00";
         linha.querySelector(".falta").innerText = "0.00";
         
-        // Destacar visualmente que foi limpo
         destaqueLinha(linha, "#fdedec");
         
         diasLimpos++;
     });
     
-    // Resetar resumo
     resetarResumo();
     
-    // Mostrar mensagem de confirmação
     mostrarMensagem(`🗑️ Todos os horários foram limpos! (${diasLimpos} dias)`, "warning");
 }
 
 // ============================================
-// 4. CÁLCULO PRINCIPAL DO MÊS
+// 4. CÁLCULO PRINCIPAL DO MÊS (ATUALIZADO)
 // ============================================
 
-/**
- * Calcula todos os valores do mês
- */
 function calcularMes() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
     const salario = Number(document.getElementById("salario").value) || 0;
 
-    // Se não houver linhas, não calcular
     if (linhas.length === 0) {
         return;
     }
 
-    // Variáveis para totais
     let totalHorasTrabalhadas = 0;
-    let totalExtrasDiarias = 0;     // Extras acima de 8h/dia (banco de horas)
-    let totalExtrasSemanais = 0;    // Extras acima de 44h/semana (pagas)
+    let totalExtrasDiarias = 0;
+    let totalExtras50 = 0;
+    let totalExtras100 = 0;
     let totalFaltas = 0;
     
-    // Controle semanal
     let semanaAtual = 1;
     const semanas = {};
+    let horasSemana = 0;
+    let diasUteisSemana = 0;
 
-    // Processar cada linha/dia
     linhas.forEach((linha, index) => {
         const inputs = linha.querySelectorAll("input");
         const diaSemana = parseInt(linha.querySelector(".dia-semana").getAttribute("data-diasemana"));
-        const isFimDeSemana = diaSemana === 0 || diaSemana === 6;
+        const isDomingo = diaSemana === 0;
+        const isSabado = diaSemana === 6;
         const isDiaUtil = diaSemana >= 1 && diaSemana <= 5;
         
-        // Calcular horas trabalhadas no dia
         let horasTrabalhadas = calcularHorasDia(inputs);
-        
-        // Arredondar para 2 casas decimais
         horasTrabalhadas = Math.round(horasTrabalhadas * 100) / 100;
         
-        // Atualizar célula de horas trabalhadas
         linha.querySelector(".trab").innerText = horasTrabalhadas.toFixed(2);
         
-        // Resetar células de cálculo
         resetarCelulasCalculo(linha);
         
-        // Inicializar nova semana se for domingo
+        // Iniciar nova semana no domingo
         if (diaSemana === 0 || index === 0) {
             if (!semanas[semanaAtual]) {
-                semanas[semanaAtual] = { total: 0 };
+                semanas[semanaAtual] = { total: 0, horas50: 0, horas100: 0 };
             }
+            horasSemana = 0;
+            diasUteisSemana = 0;
         }
         
-        // Processar dias úteis (segunda a sexta)
-        if (isDiaUtil) {
-            // Adicionar à semana atual
-            if (!semanas[semanaAtual]) {
-                semanas[semanaAtual] = { total: 0 };
+        if (isDomingo) {
+            // DOMINGO: TUDO é extra 100%
+            if (horasTrabalhadas > 0) {
+                linha.querySelector(".extra-100").innerText = horasTrabalhadas.toFixed(2);
+                totalExtras100 += horasTrabalhadas;
+                if (semanas[semanaAtual]) {
+                    semanas[semanaAtual].horas100 += horasTrabalhadas;
+                }
             }
-            semanas[semanaAtual].total += horasTrabalhadas;
-            
-            // CÁLCULO DIÁRIO - Extra acima de 8h/dia (banco de horas)
-            const jornadaDiaria = 8.0;
+        } 
+        else if (isSabado) {
+            // SÁBADO: Regras especiais
+            const jornadaDiaria = 4.0; // Sábado normalmente é 4h
             
             if (horasTrabalhadas > jornadaDiaria) {
-                const extraDiaria = horasTrabalhadas - jornadaDiaria;
-                linha.querySelector(".extra-diaria").innerText = extraDiaria.toFixed(2);
-                totalExtrasDiarias += extraDiaria;
+                const extraSabado = horasTrabalhadas - jornadaDiaria;
+                
+                // Verificar se já passou das 44h semanais
+                horasSemana += horasTrabalhadas;
+                if (horasSemana > 44) {
+                    // Acima de 44h: extra 100%
+                    const acima44 = Math.min(extraSabado, horasSemana - 44);
+                    if (acima44 > 0) {
+                        linha.querySelector(".extra-100").innerText = acima44.toFixed(2);
+                        totalExtras100 += acima44;
+                        if (semanas[semanaAtual]) {
+                            semanas[semanaAtual].horas100 += acima44;
+                        }
+                    }
+                    
+                    // O restante é extra 50%
+                    const restante = extraSabado - acima44;
+                    if (restante > 0) {
+                        linha.querySelector(".extra-50").innerText = restante.toFixed(2);
+                        totalExtras50 += restante;
+                        if (semanas[semanaAtual]) {
+                            semanas[semanaAtual].horas50 += restante;
+                        }
+                    }
+                } else {
+                    // Abaixo de 44h: extra 50%
+                    linha.querySelector(".extra-50").innerText = extraSabado.toFixed(2);
+                    totalExtras50 += extraSabado;
+                    if (semanas[semanaAtual]) {
+                        semanas[semanaAtual].horas50 += extraSabado;
+                    }
+                }
+                
+                horasSemana += horasTrabalhadas;
             } else if (horasTrabalhadas < jornadaDiaria && horasTrabalhadas > 0) {
-                // Falta no dia
                 const faltaDia = jornadaDiaria - horasTrabalhadas;
                 linha.querySelector(".falta").innerText = faltaDia.toFixed(2);
                 totalFaltas += faltaDia;
             }
-        } else if (isFimDeSemana && horasTrabalhadas > 0) {
-            // FINS DE SEMANA - Todo trabalho é extra paga
-            linha.querySelector(".extra-semanal").innerText = horasTrabalhadas.toFixed(2);
-            totalExtrasSemanais += horasTrabalhadas;
+        }
+        else if (isDiaUtil) {
+            // DIAS ÚTEIS (Segunda a Sexta)
+            if (!semanas[semanaAtual]) {
+                semanas[semanaAtual] = { total: 0, horas50: 0, horas100: 0 };
+            }
             
-            // Adicionar à semana também para controle
-            if (semanas[semanaAtual]) {
-                semanas[semanaAtual].total += horasTrabalhadas;
+            semanas[semanaAtual].total += horasTrabalhadas;
+            horasSemana += horasTrabalhadas;
+            diasUteisSemana++;
+            
+            const jornadaDiaria = 8.0;
+            
+            if (horasTrabalhadas > jornadaDiaria) {
+                const extraDiaria = horasTrabalhadas - jornadaDiaria;
+                
+                // Verificar se já passou das 44h semanais
+                if (horasSemana > 44) {
+                    // Acima de 44h: extra 100%
+                    const acima44 = Math.min(extraDiaria, horasSemana - 44);
+                    if (acima44 > 0) {
+                        linha.querySelector(".extra-100").innerText = acima44.toFixed(2);
+                        totalExtras100 += acima44;
+                        semanas[semanaAtual].horas100 += acima44;
+                    }
+                    
+                    // O restante vai para banco (será pago como extra 50% no fim da semana)
+                    const restante = extraDiaria - acima44;
+                    if (restante > 0) {
+                        linha.querySelector(".extra-diaria").innerText = restante.toFixed(2);
+                        totalExtrasDiarias += restante;
+                    }
+                } else {
+                    // Abaixo de 44h: vai para banco
+                    linha.querySelector(".extra-diaria").innerText = extraDiaria.toFixed(2);
+                    totalExtrasDiarias += extraDiaria;
+                }
+            } else if (horasTrabalhadas < jornadaDiaria && horasTrabalhadas > 0) {
+                const faltaDia = jornadaDiaria - horasTrabalhadas;
+                linha.querySelector(".falta").innerText = faltaDia.toFixed(2);
+                totalFaltas += faltaDia;
             }
         }
         
-        // FIM DA SEMANA (sábado) - Calcular extras semanais
+        // FIM DA SEMANA - Calcular distribuição das horas do banco
         if (diaSemana === 6 || index === linhas.length - 1) {
-            const jornadaSemanalLegal = 44.0; // 44 horas semanais permitidas
+            const jornadaSemanalLegal = 44.0;
             
             if (semanas[semanaAtual] && semanas[semanaAtual].total > jornadaSemanalLegal) {
-                // Calcular horas extras da semana
-                const extraSemanal = semanas[semanaAtual].total - jornadaSemanalLegal;
+                const extraSemanalTotal = semanas[semanaAtual].total - jornadaSemanalLegal;
+                const horasBancoParaPagar = Math.min(totalExtrasDiarias, extraSemanalTotal);
                 
-                // Encontrar todos os dias úteis desta semana
-                const diasUteisDaSemana = encontrarDiasUteisDaSemana(linhas, index);
-                
-                // Distribuir a hora extra igualmente pelos dias úteis
-                if (diasUteisDaSemana.length > 0) {
-                    const extraPorDia = extraSemanal / diasUteisDaSemana.length;
+                if (horasBancoParaPagar > 0 && diasUteisSemana > 0) {
+                    const extraPorDia = horasBancoParaPagar / diasUteisSemana;
                     
-                    diasUteisDaSemana.forEach(i => {
-                        const extraAtual = parseFloat(linhas[i].querySelector(".extra-semanal").innerText) || 0;
-                        linhas[i].querySelector(".extra-semanal").innerText = (extraAtual + extraPorDia).toFixed(2);
-                    });
+                    // Encontrar dias úteis desta semana e distribuir as horas como extra 50%
+                    const inicioSemana = Math.max(0, index - 6);
+                    for (let i = inicioSemana; i <= index; i++) {
+                        if (i < linhas.length) {
+                            const diaSemanaI = parseInt(linhas[i].querySelector(".dia-semana").getAttribute("data-diasemana"));
+                            if (diaSemanaI >= 1 && diaSemanaI <= 5) {
+                                const extraAtual = parseFloat(linhas[i].querySelector(".extra-50").innerText) || 0;
+                                linhas[i].querySelector(".extra-50").innerText = (extraAtual + extraPorDia).toFixed(2);
+                            }
+                        }
+                    }
                     
-                    totalExtrasSemanais += extraSemanal;
+                    totalExtras50 += horasBancoParaPagar;
+                    totalExtrasDiarias -= horasBancoParaPagar;
+                    
+                    // Atualizar totais da semana
+                    semanas[semanaAtual].horas50 += horasBancoParaPagar;
                 }
             }
             
-            // Preparar próxima semana
             semanaAtual++;
         }
         
-        // Acumular total geral
         totalHorasTrabalhadas += horasTrabalhadas;
     });
     
-    // ATUALIZAR RESUMO FINAL
-    atualizarResumo(salario, totalHorasTrabalhadas, totalExtrasDiarias, totalExtrasSemanais, totalFaltas);
+    atualizarResumo(salario, totalHorasTrabalhadas, totalExtrasDiarias, totalExtras50, totalExtras100, totalFaltas);
 }
 
 // ============================================
 // 5. FUNÇÕES AUXILIARES DE CÁLCULO
 // ============================================
 
-/**
- * Calcula horas trabalhadas em um dia
- * @param {NodeList} inputs - Inputs de horário
- * @returns {number} Total de horas trabalhadas
- */
 function calcularHorasDia(inputs) {
     let horasTrabalhadas = 0;
     
-    // Calcular horas da manhã (entrada1 → saída1)
     if (inputs[0].value && inputs[1].value) {
         horasTrabalhadas += diferencaHoras(inputs[0].value, inputs[1].value);
     }
     
-    // Calcular horas da tarde (entrada2 → saída2)
     if (inputs[2].value && inputs[3].value) {
         horasTrabalhadas += diferencaHoras(inputs[2].value, inputs[3].value);
     }
@@ -366,115 +382,80 @@ function calcularHorasDia(inputs) {
     return horasTrabalhadas;
 }
 
-/**
- * Calcula diferença entre dois horários
- * @param {string} inicio - Horário de início (HH:MM)
- * @param {string} fim - Horário de fim (HH:MM)
- * @returns {number} Diferença em horas
- */
 function diferencaHoras(inicio, fim) {
     const [h1, m1] = inicio.split(":").map(Number);
     const [h2, m2] = fim.split(":").map(Number);
     
     let minutosTrabalhados = 0;
     
-    // Tratar casos em que o horário passa da meia-noite
     if (h2 < h1 || (h2 === h1 && m2 < m1)) {
         minutosTrabalhados = ((h2 + 24) * 60 + m2) - (h1 * 60 + m1);
     } else {
         minutosTrabalhados = (h2 * 60 + m2) - (h1 * 60 + m1);
     }
     
-    // Converter minutos para horas (com 2 casas decimais)
     return Math.round((minutosTrabalhados / 60) * 100) / 100;
 }
 
-/**
- * Resetar células de cálculo de uma linha
- * @param {HTMLElement} linha - Linha da tabela
- */
 function resetarCelulasCalculo(linha) {
     linha.querySelector(".extra-diaria").innerText = "0.00";
-    linha.querySelector(".extra-semanal").innerText = "0.00";
+    linha.querySelector(".extra-50").innerText = "0.00";
+    linha.querySelector(".extra-100").innerText = "0.00";
     linha.querySelector(".falta").innerText = "0.00";
-}
-
-/**
- * Encontrar dias úteis da semana atual
- * @param {NodeList} linhas - Todas as linhas da tabela
- * @param {number} indexFinal - Índice do último dia da semana
- * @returns {number[]} Array com índices dos dias úteis
- */
-function encontrarDiasUteisDaSemana(linhas, indexFinal) {
-    const diasUteis = [];
-    const inicioSemana = Math.max(0, indexFinal - 6);
-    
-    for (let i = inicioSemana; i <= indexFinal; i++) {
-        if (i < linhas.length) {
-            const diaSemana = parseInt(linhas[i].querySelector(".dia-semana").getAttribute("data-diasemana"));
-            if (diaSemana >= 1 && diaSemana <= 5) {
-                diasUteis.push(i);
-            }
-        }
-    }
-    
-    return diasUteis;
 }
 
 // ============================================
 // 6. ATUALIZAÇÃO DA INTERFACE
 // ============================================
 
-/**
- * Atualiza o resumo com os resultados finais
- */
-function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, faltas) {
-    // Calcular valor da hora
+function atualizarResumo(salario, totalHoras, extrasDiarias, extras50, extras100, faltas) {
     const valorHora = salario > 0 ? salario / 220 : 0;
     
-    // Calcular valores monetários
-    const valorTotalExtras = extrasSemanais * valorHora * 1.5; // Extras pagas com 50% adicional
+    // Cálculo dos valores
+    const valorExtras50 = extras50 * valorHora * 1.5;    // 50% adicional
+    const valorExtras100 = extras100 * valorHora * 2.0;  // 100% adicional
+    const valorTotalExtras = valorExtras50 + valorExtras100;
     const valorTotalDescontos = faltas * valorHora;
     const totalLiquido = salario + valorTotalExtras - valorTotalDescontos;
     
     // Atualizar elementos HTML
     document.getElementById("totalHoras").innerText = totalHoras.toFixed(2);
     document.getElementById("totalExtrasDiarias").innerText = extrasDiarias.toFixed(2);
-    document.getElementById("totalExtrasSemanais").innerText = extrasSemanais.toFixed(2);
+    document.getElementById("totalExtras50").innerText = extras50.toFixed(2);
+    document.getElementById("totalExtras100").innerText = extras100.toFixed(2);
     document.getElementById("totalFaltas").innerText = faltas.toFixed(2);
     document.getElementById("valorHora").innerText = valorHora.toFixed(2);
-    document.getElementById("valorExtras").innerText = valorTotalExtras.toFixed(2);
+    document.getElementById("valorExtras50").innerText = valorExtras50.toFixed(2);
+    document.getElementById("valorExtras100").innerText = valorExtras100.toFixed(2);
     document.getElementById("valorDescontos").innerText = valorTotalDescontos.toFixed(2);
     document.getElementById("totalLiquido").innerText = totalLiquido.toFixed(2);
+    
+    // Atualizar título das colunas de valor
+    document.querySelector('p:has(#valorExtras50)').innerHTML = `Valor Extras 50%: R$ <span id="valorExtras50">${valorExtras50.toFixed(2)}</span>`;
+    document.querySelector('p:has(#valorExtras100)').innerHTML = `Valor Extras 100%: R$ <span id="valorExtras100">${valorExtras100.toFixed(2)}</span>`;
 }
 
-/**
- * Reseta todos os valores do resumo
- */
 function resetarResumo() {
     document.getElementById("totalHoras").innerText = "0";
     document.getElementById("totalExtrasDiarias").innerText = "0";
-    document.getElementById("totalExtrasSemanais").innerText = "0";
+    document.getElementById("totalExtras50").innerText = "0";
+    document.getElementById("totalExtras100").innerText = "0";
     document.getElementById("totalFaltas").innerText = "0";
     document.getElementById("valorHora").innerText = "0.00";
-    document.getElementById("valorExtras").innerText = "0.00";
+    document.getElementById("valorExtras50").innerText = "0.00";
+    document.getElementById("valorExtras100").innerText = "0.00";
     document.getElementById("valorDescontos").innerText = "0.00";
     document.getElementById("totalLiquido").innerText = "0.00";
 }
 
 // ============================================
-// 7. FUNÇÕES DE VALIDAÇÃO E UTILITÁRIAS
+// 7. FUNÇÕES DE UTILITÁRIAS
 // ============================================
 
-/**
- * Valida se um horário está correto
- * @param {HTMLInputElement} input - Input de horário
- */
 function validarHorario(input) {
     const valor = input.value;
     if (!valor) return;
     
-    // Validar formato HH:MM
     const regex = /^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/;
     if (!regex.test(valor)) {
         input.style.borderColor = "#e74c3c";
@@ -482,25 +463,17 @@ function validarHorario(input) {
         return;
     }
     
-    // Se a validação passar
     input.style.borderColor = "#27ae60";
     input.style.boxShadow = "0 0 0 3px rgba(39, 174, 96, 0.2)";
     
-    // Remover destaque após 1 segundo
     setTimeout(() => {
         input.style.borderColor = "";
         input.style.boxShadow = "";
     }, 1000);
     
-    // Calcular automaticamente após mudança
     setTimeout(() => calcularMes(), 300);
 }
 
-/**
- * Destaca uma linha da tabela temporariamente
- * @param {HTMLElement} linha - Linha a ser destacada
- * @param {string} cor - Cor de destaque
- */
 function destaqueLinha(linha, cor) {
     linha.style.backgroundColor = cor;
     linha.style.transition = "background-color 0.5s";
@@ -510,19 +483,12 @@ function destaqueLinha(linha, cor) {
     }, 1000);
 }
 
-/**
- * Mostra uma mensagem flutuante na tela
- * @param {string} texto - Texto da mensagem
- * @param {string} tipo - Tipo da mensagem (success, error, warning, info)
- */
 function mostrarMensagem(texto, tipo = "info") {
-    // Remover mensagem anterior se existir
     const mensagemAnterior = document.getElementById("mensagemFlutuante");
     if (mensagemAnterior) {
         document.body.removeChild(mensagemAnterior);
     }
     
-    // Cores para cada tipo de mensagem
     const cores = {
         success: "#27ae60",
         error: "#e74c3c",
@@ -530,7 +496,6 @@ function mostrarMensagem(texto, tipo = "info") {
         info: "#3498db"
     };
     
-    // Criar elemento da mensagem
     const mensagemDiv = document.createElement("div");
     mensagemDiv.id = "mensagemFlutuante";
     mensagemDiv.style.cssText = `
@@ -550,10 +515,8 @@ function mostrarMensagem(texto, tipo = "info") {
     `;
     mensagemDiv.innerHTML = texto;
     
-    // Adicionar ao corpo
     document.body.appendChild(mensagemDiv);
     
-    // Remover após 5 segundos
     setTimeout(() => {
         mensagemDiv.style.animation = "slideOut 0.3s ease";
         setTimeout(() => {
@@ -568,11 +531,7 @@ function mostrarMensagem(texto, tipo = "info") {
 // 8. EVENT LISTENERS
 // ============================================
 
-/**
- * Configura os event listeners quando o DOM carrega
- */
 document.addEventListener('DOMContentLoaded', function() {
-    // Calcular automaticamente quando horários forem alterados
     document.addEventListener('change', function(e) {
         if (e.target.type === 'time') {
             setTimeout(() => {
@@ -583,7 +542,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Calcular automaticamente quando salário for alterado
     document.getElementById('salario')?.addEventListener('input', function() {
         setTimeout(() => {
             if (document.querySelectorAll('#corpoTabela tr').length > 0) {
@@ -592,21 +550,17 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     });
     
-    // Adicionar atalhos de teclado
     document.addEventListener('keydown', function(e) {
-        // Ctrl + G = Gerar Calendário
         if (e.ctrlKey && e.key === 'g') {
             e.preventDefault();
             gerarCalendario();
         }
         
-        // Ctrl + P = Preencher Horários Padrão
         if (e.ctrlKey && e.key === 'p') {
             e.preventDefault();
             preencherHorariosPadrao();
         }
         
-        // Ctrl + C = Calcular Mês
         if (e.ctrlKey && e.key === 'c') {
             e.preventDefault();
             calcularMes();
@@ -615,12 +569,9 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // ============================================
-// 9. EXPORTAÇÃO DE DADOS (BÔNUS)
+// 9. FUNÇÕES ADICIONAIS (OPCIONAIS)
 // ============================================
 
-/**
- * Exporta os dados para CSV
- */
 function exportarParaCSV() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
     if (linhas.length === 0) {
@@ -628,7 +579,7 @@ function exportarParaCSV() {
         return;
     }
     
-    let csv = "Data;Dia;Entrada1;Saida1;Entrada2;Saida2;Trabalhado;ExtraBanco;ExtraPaga;Falta\n";
+    let csv = "Data;Dia;Entrada1;Saida1;Entrada2;Saida2;Trabalhado;ExtraBanco;Extra50%;Extra100%;Falta\n";
     
     linhas.forEach(linha => {
         const colunas = linha.querySelectorAll("td");
@@ -636,11 +587,9 @@ function exportarParaCSV() {
         
         colunas.forEach((coluna, index) => {
             if (index === 2 || index === 3 || index === 4 || index === 5) {
-                // Inputs de horário
                 const input = coluna.querySelector("input");
                 dados.push(input ? input.value : "");
             } else {
-                // Texto normal
                 dados.push(coluna.innerText.trim());
             }
         });
@@ -648,18 +597,18 @@ function exportarParaCSV() {
         csv += dados.join(";") + "\n";
     });
     
-    // Adicionar resumo
     csv += "\nRESUMO\n";
     csv += `Total Horas Trabalhadas;${document.getElementById("totalHoras").innerText}\n`;
     csv += `Extras Diárias (Banco);${document.getElementById("totalExtrasDiarias").innerText}\n`;
-    csv += `Extras Semanais (Pagas);${document.getElementById("totalExtrasSemanais").innerText}\n`;
+    csv += `Extras 50%;${document.getElementById("totalExtras50").innerText}\n`;
+    csv += `Extras 100%;${document.getElementById("totalExtras100").innerText}\n`;
     csv += `Horas Faltantes;${document.getElementById("totalFaltas").innerText}\n`;
     csv += `Valor Hora;R$ ${document.getElementById("valorHora").innerText}\n`;
-    csv += `Valor Extras;R$ ${document.getElementById("valorExtras").innerText}\n`;
+    csv += `Valor Extras 50%;R$ ${document.getElementById("valorExtras50").innerText}\n`;
+    csv += `Valor Extras 100%;R$ ${document.getElementById("valorExtras100").innerText}\n`;
     csv += `Descontos;R$ ${document.getElementById("valorDescontos").innerText}\n`;
     csv += `Total Líquido;R$ ${document.getElementById("totalLiquido").innerText}\n`;
     
-    // Criar link para download
     const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
@@ -673,30 +622,22 @@ function exportarParaCSV() {
     mostrarMensagem("📁 Dados exportados para CSV com sucesso!", "success");
 }
 
-/**
- * Imprime a tabela e o resumo
- */
 function imprimirRelatorio() {
     window.print();
 }
 
-// ============================================
-// 10. FUNÇÕES ADICIONAIS DE CONVENIÊNCIA
-// ============================================
-
-/**
- * Copia o resumo para a área de transferência
- */
 function copiarResumo() {
     const resumo = `
 RESUMO MENSAL - CONTROLE DE HORAS
 ===================================
 Total Horas Trabalhadas: ${document.getElementById("totalHoras").innerText} h
 Extras Diárias (Banco): ${document.getElementById("totalExtrasDiarias").innerText} h
-Extras Semanais (Pagas): ${document.getElementById("totalExtrasSemanais").innerText} h
+Extras 50% (Dias Úteis): ${document.getElementById("totalExtras50").innerText} h
+Extras 100% (Fins de Semana): ${document.getElementById("totalExtras100").innerText} h
 Horas Faltantes: ${document.getElementById("totalFaltas").innerText} h
 Valor Hora: R$ ${document.getElementById("valorHora").innerText}
-Valor Extras: R$ ${document.getElementById("valorExtras").innerText}
+Valor Extras 50%: R$ ${document.getElementById("valorExtras50").innerText}
+Valor Extras 100%: R$ ${document.getElementById("valorExtras100").innerText}
 Descontos: R$ ${document.getElementById("valorDescontos").innerText}
 Total Líquido: R$ ${document.getElementById("totalLiquido").innerText}
 ===================================
@@ -707,40 +648,3 @@ Gerado em: ${new Date().toLocaleDateString('pt-BR')}
         .then(() => mostrarMensagem("📋 Resumo copiado para a área de transferência!", "success"))
         .catch(() => mostrarMensagem("❌ Erro ao copiar para área de transferência", "error"));
 }
-
-/**
- * Adiciona botões extras à interface (opcional)
- */
-function adicionarBotoesExtras() {
-    const topoDiv = document.querySelector(".topo");
-    
-    if (!document.getElementById("btnExportar")) {
-        const botaoExportar = document.createElement("button");
-        botaoExportar.id = "btnExportar";
-        botaoExportar.innerHTML = "📁 Exportar CSV";
-        botaoExportar.onclick = exportarParaCSV;
-        botaoExportar.title = "Exportar dados para arquivo CSV";
-        botaoExportar.style.background = "#1abc9c";
-        
-        const botaoImprimir = document.createElement("button");
-        botaoImprimir.id = "btnImprimir";
-        botaoImprimir.innerHTML = "🖨️ Imprimir";
-        botaoImprimir.onclick = imprimirRelatorio;
-        botaoImprimir.title = "Imprimir relatório";
-        botaoImprimir.style.background = "#7f8c8d";
-        
-        const botaoCopiar = document.createElement("button");
-        botaoCopiar.id = "btnCopiar";
-        botaoCopiar.innerHTML = "📋 Copiar Resumo";
-        botaoCopiar.onclick = copiarResumo;
-        botaoCopiar.title = "Copiar resumo para área de transferência";
-        botaoCopiar.style.background = "#34495e";
-        
-        topoDiv.appendChild(botaoExportar);
-        topoDiv.appendChild(botaoImprimir);
-        topoDiv.appendChild(botaoCopiar);
-    }
-}
-
-// Adicionar botões extras automaticamente (opcional - descomente se quiser)
-// document.addEventListener('DOMContentLoaded', adicionarBotoesExtras);

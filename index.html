@@ -45,7 +45,8 @@
                     <th>Saída</th>
                     <th>Trabalhado</th>
                     <th>Extra (Banco)</th>
-                    <th>Extra (Paga)</th>
+                    <th>Extra 50%</th>
+                    <th>Extra 100%</th>
                     <th>Falta</th>
                 </tr>
             </thead>
@@ -57,30 +58,36 @@
         <h2>📊 Resumo Mensal</h2>
         <p>Total Trabalhado: <span id="totalHoras">0</span> h</p>
         <p>Extras Diárias (Banco): <span id="totalExtrasDiarias">0</span> h</p>
-        <p>Extras Semanais (Pagas): <span id="totalExtrasSemanais">0</span> h</p>
+        <p>Extras 50% (Dias Úteis): <span id="totalExtras50">0</span> h</p>
+        <p>Extras 100% (Fins de Semana): <span id="totalExtras100">0</span> h</p>
         <p>Horas Faltantes: <span id="totalFaltas">0</span> h</p>
         <p>Valor Hora: R$ <span id="valorHora">0.00</span></p>
-        <p>Valor Extras (Pagas): R$ <span id="valorExtras">0.00</span></p>
+        <p>Valor Extras 50%: R$ <span id="valorExtras50">0.00</span></p>
+        <p>Valor Extras 100%: R$ <span id="valorExtras100">0.00</span></p>
         <p>Descontos: R$ <span id="valorDescontos">0.00</span></p>
-        <p>Total Líquido: R$ <span id="totalLiquido">0.00</span></p>
+        <p class="total-geral">Total Líquido: R$ <span id="totalLiquido">0.00</span></p>
     </div>
 
     <div class="legenda">
         <div class="legenda-item">
-            <span class="cor-domingo"></span> DOMINGO - Dia não útil
+            <span class="cor-domingo"></span> DOMINGO - Extra 100%
         </div>
         <div class="legenda-item">
-            <span class="cor-sabado"></span> SÁBADO - Dia útil com regras especiais
+            <span class="cor-sabado"></span> SÁBADO - Extra 50% (até 44h semanais) / 100% (após)
         </div>
         <div class="legenda-item">
             <span class="cor-extra-banco"></span> Extra (Banco) - Acima de 8h/dia
         </div>
         <div class="legenda-item">
-            <span class="cor-extra-paga"></span> Extra (Paga) - Acima de 44h/semana
+            <span class="cor-extra-50"></span> Extra 50% - Dias úteis após 44h semanais
+        </div>
+        <div class="legenda-item">
+            <span class="cor-extra-100"></span> Extra 100% - Domingos e feriados
         </div>
         <div class="info-extra">
-            <p><i>💡 Para fins de semana, todo trabalho é considerado hora extra paga</i></p>
-            <p><i>💡 Sistema calcula: 1h extra paga por semana (45h - 44h legais)</i></p>
+            <p><i>💡 <strong>Extra 50%:</strong> Dias úteis que excedem 44h semanais</i></p>
+            <p><i>💡 <strong>Extra 100%:</strong> Domingos, feriados e horas noturnas</i></p>
+            <p><i>💡 <strong>Extra Banco:</strong> Horas acima de 8h/dia que não excedem 44h semanais</i></p>
             <p><i>💡 <strong>Botão "Preencher Horários Padrão":</strong> Preenche automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis</i></p>
         </div>
     </div>
