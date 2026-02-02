@@ -27,10 +27,10 @@
             <input type="number" id="salario" placeholder="Ex: 2500" min="0" step="0.01">
         </div>
 
-        <button onclick="gerarCalendario()">📋 Gerar Mês</button>
-        <button onclick="preencherHorariosPadrao()">🕒 Preencher Horários Padrão</button>
-        <button onclick="limparHorarios()">🗑️ Limpar Horários</button>
-        <button onclick="calcularMes()">🧮 Calcular Mês</button>
+        <button onclick="gerarCalendario()" title="Criar calendário do mês selecionado">📋 Gerar Mês</button>
+        <button onclick="preencherHorariosPadrao()" title="Preencher automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis">🕒 Preencher Horários Padrão</button>
+        <button onclick="limparHorarios()" title="Limpar todos os horários da tabela">🗑️ Limpar Horários</button>
+        <button onclick="calcularMes()" title="Calcular totais do mês">🧮 Calcular Mês</button>
     </div>
 
     <div class="tabela-container">
@@ -66,10 +66,10 @@
     </div>
 
     <div class="legenda">
-        <div class="legenda-item" style="background-color: #ffe0e0;">
+        <div class="legenda-item">
             <span class="cor-domingo"></span> DOMINGO - Dia não útil
         </div>
-        <div class="legenda-item" style="background-color: #fff3cd;">
+        <div class="legenda-item">
             <span class="cor-sabado"></span> SÁBADO - Dia útil com regras especiais
         </div>
         <div class="legenda-item">
@@ -78,9 +78,11 @@
         <div class="legenda-item">
             <span class="cor-extra-paga"></span> Extra (Paga) - Acima de 44h/semana
         </div>
-        <p><i>💡 Para fins de semana, todo trabalho é considerado hora extra paga</i></p>
-        <p><i>💡 Sistema calcula: 1h extra paga por semana (45h - 44h legais)</i></p>
-        <p><i>💡 <strong>Botão "Preencher Horários Padrão":</strong> Preenche automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis</i></p>
+        <div class="info-extra">
+            <p><i>💡 Para fins de semana, todo trabalho é considerado hora extra paga</i></p>
+            <p><i>💡 Sistema calcula: 1h extra paga por semana (45h - 44h legais)</i></p>
+            <p><i>💡 <strong>Botão "Preencher Horários Padrão":</strong> Preenche automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis</i></p>
+        </div>
     </div>
 </div>
 
