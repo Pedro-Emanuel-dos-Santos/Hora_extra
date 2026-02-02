@@ -69,10 +69,12 @@
     <input type="number" id="salario" step="0.01" />
 
     <label>Horas Extras 50%</label>
-    <input type="number" id="he50" step="0.01" />
+    <input type="number" id="he50_h" placeholder="Horas" min="0" />
+    <input type="number" id="he50_m" placeholder="Minutos" min="0" max="59" />
 
     <label>Horas Extras 100%</label>
-    <input type="number" id="he100" step="0.01" />
+    <input type="number" id="he100_h" placeholder="Horas" min="0" />
+    <input type="number" id="he100_m" placeholder="Minutos" min="0" max="59" />
 
     <button onclick="calcular()">Calcular</button>
 
@@ -87,8 +89,14 @@
   <script>
     function calcular() {
       const salario = parseFloat(document.getElementById('salario').value) || 0;
-      const he50 = parseFloat(document.getElementById('he50').value) || 0;
-      const he100 = parseFloat(document.getElementById('he100').value) || 0;
+
+      const he50_h = parseFloat(document.getElementById('he50_h').value) || 0;
+      const he50_m = parseFloat(document.getElementById('he50_m').value) || 0;
+      const he100_h = parseFloat(document.getElementById('he100_h').value) || 0;
+      const he100_m = parseFloat(document.getElementById('he100_m').value) || 0;
+
+      const he50 = he50_h + (he50_m / 60);
+      const he100 = he100_h + (he100_m / 60);
 
       const valorHora = salario / 220;
       const valor50 = valorHora * 1.5 * he50;
