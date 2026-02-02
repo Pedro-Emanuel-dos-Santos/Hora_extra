@@ -142,6 +142,22 @@ function adicionarEstilosDestaque() {
         document.head.appendChild(style);
     }
 }
+// Adicione esta função ao final do módulo utils.js:
 
+/**
+ * Formata valor monetário em reais
+ * @param {number} valor - Valor a ser formatado
+ * @returns {string} Valor formatado
+ */
+function formatarMoeda(valor) {
+    if (typeof valor !== 'number' || isNaN(valor)) {
+        return 'R$ 0,00';
+    }
+    
+    return 'R$ ' + valor.toLocaleString('pt-BR', {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+}
 // Inicializar estilos de destaque
 adicionarEstilosDestaque();

@@ -762,3 +762,13 @@ body.tema-verde .container {
         break-inside: avoid;
     }
 }
+/* Estilos para os novos itens do resumo */
+#horasNormaisValor {
+    color: #3b82f6;
+    background: #dbeafe;
+}
+
+#valorHorasNormais {
+    color: #10b981;
+    background: #d1fae5;
+}
