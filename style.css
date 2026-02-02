@@ -14,7 +14,7 @@ body {
 }
 
 .container {
-    max-width: 1500px;
+    max-width: 1400px;
     margin: 0 auto;
     background: white;
     border-radius: 10px;
@@ -145,7 +145,7 @@ table {
     width: 100%;
     border-collapse: collapse;
     background: white;
-    min-width: 1300px;
+    min-width: 1200px;
 }
 
 table th {
@@ -250,36 +250,25 @@ input[type="time"]:focus {
     font-size: 1em;
 }
 
-.extra-50 {
-    color: #27ae60;
+.extra-semanal {
+    color: #e67e22;
     font-weight: 600;
     font-family: 'Courier New', monospace;
-    background-color: #d5f4e6;
+    background-color: #fef5e7;
     padding: 8px;
     border-radius: 4px;
-    border: 1px solid #a3e4c1;
-    font-size: 1em;
-}
-
-.extra-100 {
-    color: #e74c3c;
-    font-weight: 600;
-    font-family: 'Courier New', monospace;
-    background-color: #fadbd8;
-    padding: 8px;
-    border-radius: 4px;
-    border: 1px solid #f5b7b1;
+    border: 1px solid #fdebd0;
     font-size: 1em;
 }
 
 .falta {
-    color: #7d3c98;
+    color: #e74c3c;
     font-weight: 600;
     font-family: 'Courier New', monospace;
-    background-color: #f4ecf7;
+    background-color: #fdedec;
     padding: 8px;
     border-radius: 4px;
-    border: 1px solid #e8daef;
+    border: 1px solid #fadbd8;
     font-size: 1em;
 }
 
@@ -302,7 +291,7 @@ input[type="time"]:focus {
 
 .resumo p {
     font-size: 1.1em;
-    margin: 12px 0;
+    margin: 15px 0;
     padding: 12px 20px;
     background: white;
     border-radius: 6px;
@@ -326,43 +315,26 @@ input[type="time"]:focus {
 #totalExtrasDiarias {
     color: #3498db;
     background-color: #e8f4fd;
-    border-left-color: #3498db;
 }
 
-#totalExtras50 {
+#totalExtrasSemanais {
+    color: #e67e22;
+    background-color: #fef5e7;
+}
+
+#valorExtras {
     color: #27ae60;
-    background-color: #d5f4e6;
-    border-left-color: #27ae60;
+    background-color: #e8f6f3;
 }
 
-#totalExtras100 {
-    color: #e74c3c;
-    background-color: #fadbd8;
-    border-left-color: #e74c3c;
-}
-
-#valorExtras50 {
-    color: #27ae60;
-    background-color: #d5f4e6;
-    border-left-color: #27ae60;
-}
-
-#valorExtras100 {
-    color: #e74c3c;
-    background-color: #fadbd8;
-    border-left-color: #e74c3c;
+#valorDescontos {
+    color: #c0392b;
+    background-color: #fdedec;
 }
 
 #valorHora {
     color: #3498db;
     background-color: #e8f4fd;
-    border-left-color: #3498db;
-}
-
-#valorDescontos {
-    color: #7d3c98;
-    background-color: #f4ecf7;
-    border-left-color: #7d3c98;
 }
 
 #totalLiquido {
@@ -371,14 +343,6 @@ input[type="time"]:focus {
     font-size: 1.3em;
     font-weight: 700;
     padding: 8px 15px;
-}
-
-.total-geral {
-    background: linear-gradient(135deg, #e8f6f3 0%, #d1f2eb 100%) !important;
-    border-left: 4px solid #1abc9c !important;
-    font-weight: 700;
-    margin-top: 20px !important;
-    font-size: 1.2em;
 }
 
 /* ===== LEGENDA ===== */
@@ -399,10 +363,10 @@ input[type="time"]:focus {
     font-size: 0.95em;
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    min-width: 300px;
+    min-width: 250px;
 }
 
-.cor-domingo, .cor-sabado, .cor-extra-banco, .cor-extra-50, .cor-extra-100 {
+.cor-domingo, .cor-sabado, .cor-extra-banco, .cor-extra-paga {
     display: inline-block;
     width: 20px;
     height: 20px;
@@ -426,14 +390,9 @@ input[type="time"]:focus {
     border-color: #3498db;
 }
 
-.cor-extra-50 {
-    background-color: #d5f4e6;
-    border-color: #27ae60;
-}
-
-.cor-extra-100 {
-    background-color: #fadbd8;
-    border-color: #e74c3c;
+.cor-extra-paga {
+    background-color: #fef5e7;
+    border-color: #e67e22;
 }
 
 .info-extra {
@@ -498,7 +457,7 @@ input[type="time"]:focus {
     
     table {
         font-size: 0.9em;
-        min-width: 1200px;
+        min-width: 1100px;
     }
     
     input[type="time"] {
