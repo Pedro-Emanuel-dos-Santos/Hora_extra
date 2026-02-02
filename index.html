@@ -1,115 +1,46 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <title>RH | Cálculo de Hora Extra</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Arial, sans-serif;
-      background: #f4f6f8;
-      margin: 0;
-    }
-    header {
-      background: #1e3a8a;
-      color: white;
-      padding: 16px 24px;
-      font-weight: 600;
-    }
-    .container {
-      max-width: 520px;
-      background: white;
-      margin: 40px auto;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
-    h2 { color: #1f2933; margin-top: 0; }
-    label { font-size: 14px; font-weight: 600; }
-    input, select {
-      width: 100%;
-      padding: 12px;
-      margin: 6px 0 16px 0;
-      border-radius: 8px;
-      border: 1px solid #d1d5db;
-      font-size: 15px;
-    }
-    button {
-      width: 100%;
-      padding: 14px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 10px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    button:hover { background: #1e40af; }
-    .box {
-      background: #f9fafb;
-      padding: 18px;
-      border-radius: 10px;
-      border-left: 5px solid #2563eb;
-      margin-top: 20px;
-    }
-    .total {
-      font-size: 18px;
-      font-weight: 700;
-      color: #065f46;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Controle de Horas – RH</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>Sistema Interno de RH – Cálculo de Hora Extra</header>
 
-  <div class="container">
-    <h2>Cálculo de Hora Extra</h2>
+<div class="container">
+    <h1>Controle de Horas – RH</h1>
 
-    <label>Salário Base (R$)</label>
-    <input type="number" id="salario" step="0.01" />
-
-    <label>Horas Extras 50%</label>
-    <input type="number" id="he50_h" placeholder="Horas" min="0" />
-    <input type="number" id="he50_m" placeholder="Minutos" min="0" max="59" />
-
-    <label>Horas Extras 100%</label>
-    <input type="number" id="he100_h" placeholder="Horas" min="0" />
-    <input type="number" id="he100_m" placeholder="Minutos" min="0" max="59" />
-
-    <button onclick="calcular()">Calcular</button>
-
-    <div id="resultado" class="box" style="display:none;">
-      <p>Valor da Hora: <strong>R$ <span id="valorHora"></span></strong></p>
-      <p>HE 50%: R$ <span id="valor50"></span></p>
-      <p>HE 100%: R$ <span id="valor100"></span></p>
-      <p class="total">Total: R$ <span id="total"></span></p>
+    <div class="financeiro">
+        <label>Salário Mensal (R$):</label>
+        <input type="number" id="salario" placeholder="Ex: 2500">
+        <p><strong>Valor da Hora:</strong> R$ <span id="valorHora">0.00</span></p>
     </div>
-  </div>
 
-  <script>
-    function calcular() {
-      const salario = parseFloat(document.getElementById('salario').value) || 0;
+    <table>
+        <thead>
+            <tr>
+                <th>Dia</th>
+                <th>Entrada</th>
+                <th>Saída</th>
+                <th>Horas Trabalhadas</th>
+                <th>Extra</th>
+                <th>Falta</th>
+            </tr>
+        </thead>
+        <tbody id="tabelaDias"></tbody>
+    </table>
 
-      const he50_h = parseFloat(document.getElementById('he50_h').value) || 0;
-      const he50_m = parseFloat(document.getElementById('he50_m').value) || 0;
-      const he100_h = parseFloat(document.getElementById('he100_h').value) || 0;
-      const he100_m = parseFloat(document.getElementById('he100_m').value) || 0;
+    <div class="resumo">
+        <p><strong>Total da Semana:</strong> <span id="totalSemana">0</span> h</p>
+        <p><strong>Horas Extras:</strong> <span id="extraSemana">0</span> h</p>
+        <p><strong>Horas Faltantes:</strong> <span id="faltaSemana">0</span> h</p>
+        <p><strong>Total Extras (R$):</strong> R$ <span id="valorExtra">0.00</span></p>
+        <p><strong>Total Descontos (R$):</strong> R$ <span id="valorDesconto">0.00</span></p>
+    </div>
 
-      const he50 = he50_h + (he50_m / 60);
-      const he100 = he100_h + (he100_m / 60);
+    <button onclick="calcularSemanaUI()">Calcular Semana</button>
+</div>
 
-      const valorHora = salario / 220;
-      const valor50 = valorHora * 1.5 * he50;
-      const valor100 = valorHora * 2 * he100;
-      const total = valor50 + valor100;
-
-      document.getElementById('valorHora').innerText = valorHora.toFixed(2);
-      document.getElementById('valor50').innerText = valor50.toFixed(2);
-      document.getElementById('valor100').innerText = valor100.toFixed(2);
-      document.getElementById('total').innerText = total.toFixed(2);
-
-      document.getElementById('resultado').style.display = 'block';
-    }
-  </script>
+<script src="script.js"></script>
 </body>
 </html>
