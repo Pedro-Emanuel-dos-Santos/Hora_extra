@@ -80,6 +80,7 @@
                     <th><i class="fas fa-piggy-bank"></i> Extra (Banco)</th>
                     <th><i class="fas fa-money-bill-wave"></i> Extra (Paga)</th>
                     <th><i class="fas fa-times-circle"></i> Falta</th>
+                    <th><i class="fas fa-minus-circle"></i> Desc. R$</th> <!-- NOVA COLUNA -->
                 </tr>
             </thead>
             <tbody id="corpoTabela"></tbody>
@@ -89,37 +90,62 @@
     <div class="resumo">
         <h2><i class="fas fa-chart-bar"></i> Resumo Mensal</h2>
         <div class="resumo-grid">
+            <!-- SALÁRIO BASE -->
+            <div class="resumo-item">
+                <span class="resumo-label">Salário Base:</span>
+                <span class="resumo-valor" id="salarioBase">R$ 0,00</span>
+            </div>
+            
+            <!-- HORAS TRABALHADAS -->
             <div class="resumo-item">
                 <span class="resumo-label">Total Trabalhado:</span>
                 <span class="resumo-valor" id="totalHoras">0 h</span>
             </div>
             <div class="resumo-item">
-                <span class="resumo-label">Extras Diárias (Banco):</span>
+                <span class="resumo-label">Horas Esperadas:</span>
+                <span class="resumo-valor" id="horasEsperadas">0 h</span>
+            </div>
+            
+            <!-- VALOR HORA -->
+            <div class="resumo-item">
+                <span class="resumo-label">Valor Hora:</span>
+                <span class="resumo-valor" id="valorHora">R$ 0,00</span>
+            </div>
+            
+            <!-- EXTRAS -->
+            <div class="resumo-item">
+                <span class="resumo-label">Extras (Banco):</span>
                 <span class="resumo-valor" id="totalExtrasDiarias">0 h</span>
             </div>
             <div class="resumo-item">
-                <span class="resumo-label">Extras Semanais (Pagas):</span>
+                <span class="resumo-label">Extras (Pagas):</span>
                 <span class="resumo-valor" id="totalExtrasSemanais">0 h</span>
             </div>
+            <div class="resumo-item">
+                <span class="resumo-label">Valor Extras (+50%):</span>
+                <span class="resumo-valor" id="valorExtras">R$ 0,00</span>
+            </div>
+            
+            <!-- FALTAS E DESCONTOS -->
             <div class="resumo-item">
                 <span class="resumo-label">Horas Faltantes:</span>
                 <span class="resumo-valor" id="totalFaltas">0 h</span>
             </div>
             <div class="resumo-item">
-                <span class="resumo-label">Valor Hora:</span>
-                <span class="resumo-valor" id="valorHora">R$ 0.00</span>
+                <span class="resumo-label">Descontos por Faltas:</span>
+                <span class="resumo-valor" id="valorDescontos">R$ 0,00</span>
             </div>
+            
+            <!-- SALÁRIO PROPORCIONAL -->
             <div class="resumo-item">
-                <span class="resumo-label">Valor Extras (Pagas):</span>
-                <span class="resumo-valor" id="valorExtras">R$ 0.00</span>
+                <span class="resumo-label">Salário Proporcional:</span>
+                <span class="resumo-valor" id="salarioProporcional">R$ 0,00</span>
             </div>
-            <div class="resumo-item">
-                <span class="resumo-label">Descontos:</span>
-                <span class="resumo-valor" id="valorDescontos">R$ 0.00</span>
-            </div>
+            
+            <!-- TOTAL LÍQUIDO -->
             <div class="resumo-item" style="grid-column: 1 / -1;">
-                <span class="resumo-label">Total Líquido:</span>
-                <span class="resumo-valor" id="totalLiquido">R$ 0.00</span>
+                <span class="resumo-label">Total Líquido a Receber:</span>
+                <span class="resumo-valor" id="totalLiquido">R$ 0,00</span>
             </div>
         </div>
     </div>
@@ -143,14 +169,18 @@
                 <span class="cor-indicador cor-extra-paga"></span>
                 <span>Extra (Paga) - Acima de 44h/semana</span>
             </div>
+            <div class="legenda-item">
+                <span class="cor-indicador cor-desconto"></span>
+                <span>Desconto - Horas faltantes descontadas do salário</span>
+            </div>
         </div>
         
         <div class="info-extra">
             <p><i class="fas fa-lightbulb"></i> <strong>Dicas Importantes:</strong></p>
-            <p><i class="fas fa-arrow-right"></i> Para fins de semana, todo trabalho é considerado hora extra paga</p>
-            <p><i class="fas fa-arrow-right"></i> Sistema calcula: 1h extra paga por semana (45h - 44h legais)</p>
+            <p><i class="fas fa-arrow-right"></i> <strong>Salário Proporcional:</strong> Calculado com base nas horas trabalhadas vs horas esperadas</p>
+            <p><i class="fas fa-arrow-right"></i> <strong>Descontos:</strong> Calculados pelo valor da hora × horas faltantes</p>
+            <p><i class="fas fa-arrow-right"></i> <strong>Extras Pagas:</strong> 50% adicional sobre o valor da hora normal</p>
             <p><i class="fas fa-arrow-right"></i> <strong>Botão "Preencher Horários":</strong> Preenche automaticamente 07:30-12:00 e 13:30-18:00 para dias úteis</p>
-            <p><i class="fas fa-arrow-right"></i> <strong>Botão "Exportar PDF":</strong> Exporta relatório completo em formato PDF</p>
             <p><i class="fas fa-arrow-right"></i> <strong>Atalhos:</strong> Ctrl+G (Gerar), Ctrl+P (Preencher), Ctrl+C (Calcular), Ctrl+E (Exportar PDF)</p>
         </div>
     </div>

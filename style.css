@@ -258,7 +258,7 @@ table {
     border-collapse: separate;
     border-spacing: 0;
     background: white;
-    min-width: 1200px;
+    min-width: 1300px;
 }
 
 table th {
@@ -393,6 +393,18 @@ input[type="time"]:focus {
     border: 2px solid #fca5a5;
 }
 
+.desconto-dia {
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    color: var(--danger);
+    background: linear-gradient(135deg, #fdedec 0%, #fadbd8 100%);
+    padding: 10px;
+    border-radius: var(--radius-sm);
+    border: 2px solid #fca5a5;
+    font-size: 0.9em;
+    min-width: 90px;
+}
+
 /* ===== SEÇÃO DE RESUMO PREMIUM ===== */
 .resumo {
     margin-top: 40px;
@@ -468,21 +480,39 @@ input[type="time"]:focus {
     background: #f8faff;
     min-width: 120px;
     text-align: center;
+    transition: all 0.3s ease;
 }
 
 /* Cores específicas para valores */
-#totalHoras { color: var(--dark); }
+#salarioBase { color: var(--primary-dark); background: #e0e7ff; }
+#totalHoras { color: var(--dark); background: #f3f4f6; }
+#horasEsperadas { color: #6b7280; background: #f9fafb; }
 #totalExtrasDiarias { color: var(--primary); background: #e8f4fd; }
 #totalExtrasSemanais { color: var(--warning); background: #fef5e7; }
 #totalFaltas { color: var(--danger); background: #fdedec; }
 #valorHora { color: var(--primary-dark); background: #e0e7ff; }
 #valorExtras { color: #10b981; background: #d1fae5; }
 #valorDescontos { color: var(--danger); background: #fee2e2; }
+#salarioProporcional { color: #3b82f6; background: #dbeafe; }
 #totalLiquido { 
     color: white; 
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
     font-size: 1.5em;
     padding: 12px 24px;
+}
+
+/* Classes para valores positivos/negativos */
+.valor-negativo {
+    color: #ef4444 !important;
+    background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%) !important;
+    border-color: #fca5a5 !important;
+    animation: pulse-negative 1s ease;
+}
+
+.valor-positivo {
+    color: #10b981 !important;
+    background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%) !important;
+    border-color: #a7f3d0 !important;
 }
 
 /* ===== LEGENDA MODERNA ===== */
@@ -542,6 +572,7 @@ input[type="time"]:focus {
 .cor-sabado { background: linear-gradient(135deg, #fff9e6 0%, #fff3cd 100%); border: 2px solid var(--warning); }
 .cor-extra-banco { background: linear-gradient(135deg, #e8f4fd 0%, #d6eaf8 100%); border: 2px solid var(--primary); }
 .cor-extra-paga { background: linear-gradient(135deg, #fef5e7 0%, #fdebd0 100%); border: 2px solid var(--warning); }
+.cor-desconto { background: linear-gradient(135deg, #fdedec 0%, #fadbd8 100%); border: 2px solid var(--danger); }
 
 .info-extra {
     margin-top: 25px;
@@ -576,6 +607,12 @@ input[type="time"]:focus {
 @keyframes pulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulse-negative {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.02); }
     100% { transform: scale(1); }
 }
 
@@ -648,6 +685,7 @@ input[type="time"]:focus {
     
     table {
         font-size: 0.85em;
+        min-width: 1100px;
     }
     
     input[type="time"] {

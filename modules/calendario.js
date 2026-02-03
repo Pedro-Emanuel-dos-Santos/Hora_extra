@@ -99,13 +99,17 @@ function gerarCalendario() {
             <td class="extra-diaria">0.00</td>
             <td class="extra-semanal">0.00</td>
             <td class="falta">0.00</td>
+            <td class="desconto-dia">R$ 0,00</td>
         `;
 
         tbody.appendChild(tr);
     }
     
     // Mostrar mensagem informativa
-    mostrarMensagem(`📅 Calendário gerado com ${diasMes} dias!<br><small>Use "Preencher Horários" para preencher automaticamente.</small>`, "success");
+    const diasUteis = calcularDiasUteisNoMes(mes, ano);
+    const horasEsperadas = diasUteis * 8;
+    
+    mostrarMensagem(`📅 Calendário gerado com ${diasMes} dias (${diasUteis} úteis)!<br><small>Horas esperadas: ${horasEsperadas}h | Use "Preencher Horários" para preencher automaticamente.</small>`, "success");
     
     // Calcular automaticamente (vai mostrar zeros)
     setTimeout(() => calcularMes(), 500);
@@ -186,6 +190,7 @@ function limparHorariosComModal() {
                 linha.querySelector(".extra-diaria").innerText = "0.00";
                 linha.querySelector(".extra-semanal").innerText = "0.00";
                 linha.querySelector(".falta").innerText = "0.00";
+                linha.querySelector(".desconto-dia").innerText = "R$ 0,00";
                 
                 // Destacar visualmente que foi limpo
                 destaqueLinha(linha, "error");

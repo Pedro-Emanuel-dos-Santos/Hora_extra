@@ -31,6 +31,7 @@ function resetarCelulasCalculo(linha) {
     linha.querySelector(".extra-diaria").innerText = "0.00";
     linha.querySelector(".extra-semanal").innerText = "0.00";
     linha.querySelector(".falta").innerText = "0.00";
+    linha.querySelector(".desconto-dia").innerText = "R$ 0,00";
 }
 
 /**
@@ -60,7 +61,7 @@ function encontrarDiasUteisDaSemana(linhas, indexFinal) {
  */
 function calcularMes() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
-    const { salario } = getDadosAtuais();
+    const { salario, mes, ano } = getDadosAtuais();
 
     // Se não houver linhas, não calcular
     if (linhas.length === 0) {
@@ -72,6 +73,10 @@ function calcularMes() {
     let totalExtrasDiarias = 0;     // Extras acima de 8h/dia (banco de horas)
     let totalExtrasSemanais = 0;    // Extras acima de 44h/semana (pagas)
     let totalFaltas = 0;
+    let totalDescontosMonetario = 0;
+    
+    // Calcular valor da hora
+    const valorHora = salario > 0 ? salario / 220 : 0;
     
     // Controle semanal
     let semanaAtual = 1;
@@ -130,8 +135,13 @@ function calcularMes() {
             } else if (horasTrabalhadas < jornadaDiaria && horasTrabalhadas > 0) {
                 // Falta no dia
                 const faltaDia = jornadaDiaria - horasTrabalhadas;
+                const descontoDia = faltaDia * valorHora;
+                
                 linha.querySelector(".falta").innerText = faltaDia.toFixed(2);
+                linha.querySelector(".desconto-dia").innerText = formatarMoeda(descontoDia);
+                
                 totalFaltas += faltaDia;
+                totalDescontosMonetario += descontoDia;
                 
                 // Destacar falta
                 destaqueLinha(linha, "error");
@@ -189,29 +199,46 @@ function calcularMes() {
     });
     
     // ATUALIZAR RESUMO FINAL
-    atualizarResumo(salario, totalHorasTrabalhadas, totalExtrasDiarias, totalExtrasSemanais, totalFaltas);
+    atualizarResumo(salario, totalHorasTrabalhadas, totalExtrasDiarias, totalExtrasSemanais, totalFaltas, totalDescontosMonetario, mes, ano);
 }
 
 /**
  * Atualiza o resumo com os resultados finais
  */
-function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, faltas) {
+function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, faltas, totalDescontos, mes, ano) {
     // Calcular valor da hora
     const valorHora = salario > 0 ? salario / 220 : 0;
     
+    // Calcular dias úteis e horas esperadas
+    const diasUteisMes = calcularDiasUteisNoMes(mes, ano);
+    const horasEsperadasMes = diasUteisMes * 8;
+    
+    // Calcular salário proporcional
+    let salarioProporcional = salario;
+    
+    if (totalHoras < horasEsperadasMes) {
+        // Se trabalhou menos que o esperado, calcular proporcional
+        const percentualTrabalhado = totalHoras / horasEsperadasMes;
+        salarioProporcional = salario * percentualTrabalhado;
+    }
+    
     // Calcular valores monetários
     const valorTotalExtras = extrasSemanais * valorHora * 1.5; // Extras pagas com 50% adicional
-    const valorTotalDescontos = faltas * valorHora;
-    const totalLiquido = salario + valorTotalExtras - valorTotalDescontos;
+    
+    // Total líquido (salário proporcional + extras)
+    const totalLiquido = salarioProporcional + valorTotalExtras;
     
     // Atualizar elementos HTML
+    document.getElementById("salarioBase").innerText = formatarMoeda(salario);
     document.getElementById("totalHoras").innerText = totalHoras.toFixed(2) + " h";
+    document.getElementById("horasEsperadas").innerText = horasEsperadasMes.toFixed(0) + " h";
     document.getElementById("totalExtrasDiarias").innerText = extrasDiarias.toFixed(2) + " h";
     document.getElementById("totalExtrasSemanais").innerText = extrasSemanais.toFixed(2) + " h";
     document.getElementById("totalFaltas").innerText = faltas.toFixed(2) + " h";
     document.getElementById("valorHora").innerText = formatarMoeda(valorHora);
     document.getElementById("valorExtras").innerText = formatarMoeda(valorTotalExtras);
-    document.getElementById("valorDescontos").innerText = formatarMoeda(valorTotalDescontos);
+    document.getElementById("valorDescontos").innerText = formatarMoeda(totalDescontos);
+    document.getElementById("salarioProporcional").innerText = formatarMoeda(salarioProporcional);
     document.getElementById("totalLiquido").innerText = formatarMoeda(totalLiquido);
     
     // Destacar o total líquido
@@ -221,13 +248,32 @@ function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, fal
         totalLiquidoElement.style.animation = "";
     }, 500);
     
+    // Aplicar classes de cor para valores
+    if (totalDescontos > 0) {
+        document.getElementById("valorDescontos").classList.add("valor-negativo");
+    } else {
+        document.getElementById("valorDescontos").classList.remove("valor-negativo");
+    }
+    
+    if (valorTotalExtras > 0) {
+        document.getElementById("valorExtras").classList.add("valor-positivo");
+    } else {
+        document.getElementById("valorExtras").classList.remove("valor-positivo");
+    }
+    
+    if (salarioProporcional < salario) {
+        document.getElementById("salarioProporcional").classList.add("valor-negativo");
+    } else {
+        document.getElementById("salarioProporcional").classList.remove("valor-negativo");
+    }
+    
     // Mostrar mensagem se houver extras ou faltas significativas
     if (extrasSemanais > 10) {
-        mostrarMensagem(`⚠️ Atenção: ${extrasSemanais.toFixed(2)} horas extras este mês!`, "warning");
+        mostrarMensagem(`💰 ${extrasSemanais.toFixed(2)} horas extras (+${formatarMoeda(valorTotalExtras)})`, "success");
     }
     
     if (faltas > 8) {
-        mostrarMensagem(`⚠️ Atenção: ${faltas.toFixed(2)} horas faltantes este mês!`, "error");
+        mostrarMensagem(`⚠️ ${faltas.toFixed(2)} horas faltantes (-${formatarMoeda(totalDescontos)})`, "warning");
     }
 }
 
@@ -235,12 +281,20 @@ function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, fal
  * Reseta todos os valores do resumo
  */
 function resetarResumo() {
+    document.getElementById("salarioBase").innerText = "R$ 0,00";
     document.getElementById("totalHoras").innerText = "0 h";
+    document.getElementById("horasEsperadas").innerText = "0 h";
     document.getElementById("totalExtrasDiarias").innerText = "0 h";
     document.getElementById("totalExtrasSemanais").innerText = "0 h";
     document.getElementById("totalFaltas").innerText = "0 h";
     document.getElementById("valorHora").innerText = "R$ 0,00";
     document.getElementById("valorExtras").innerText = "R$ 0,00";
     document.getElementById("valorDescontos").innerText = "R$ 0,00";
+    document.getElementById("salarioProporcional").innerText = "R$ 0,00";
     document.getElementById("totalLiquido").innerText = "R$ 0,00";
+    
+    // Remover classes de cor
+    document.getElementById("valorDescontos").classList.remove("valor-negativo");
+    document.getElementById("valorExtras").classList.remove("valor-positivo");
+    document.getElementById("salarioProporcional").classList.remove("valor-negativo");
 }

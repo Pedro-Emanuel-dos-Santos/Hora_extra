@@ -103,9 +103,43 @@ function getDadosAtuais() {
 }
 
 /**
+ * Calcula número de dias úteis no mês
+ * @param {number} mes - Mês (0-11)
+ * @param {number} ano - Ano
+ * @returns {number} Número de dias úteis
+ */
+function calcularDiasUteisNoMes(mes, ano) {
+    const diasMes = new Date(ano, mes + 1, 0).getDate();
+    let diasUteis = 0;
+    
+    for (let dia = 1; dia <= diasMes; dia++) {
+        const data = new Date(ano, mes, dia);
+        const diaSemana = data.getDay();
+        
+        // Segunda a sexta são dias úteis (1-5)
+        if (diaSemana >= 1 && diaSemana <= 5) {
+            diasUteis++;
+        }
+    }
+    
+    return diasUteis;
+}
+
+/**
+ * Calcula horas esperadas no mês
+ * @param {number} mes - Mês (0-11)
+ * @param {number} ano - Ano
+ * @returns {number} Horas esperadas
+ */
+function calcularHorasEsperadasMes(mes, ano) {
+    const diasUteis = calcularDiasUteisNoMes(mes, ano);
+    return diasUteis * 8; // 8 horas por dia
+}
+
+/**
  * Destacar uma linha da tabela temporariamente
  * @param {HTMLElement} linha - Linha a ser destacada
- * @param {string} cor - Cor de destaque (nome da classe)
+ * @param {string} tipo - Tipo de destaque
  */
 function destaqueLinha(linha, tipo = 'info') {
     const classes = {
@@ -138,6 +172,10 @@ function adicionarEstilosDestaque() {
             .destaque-error td { background-color: rgba(239, 68, 68, 0.1) !important; }
             .destaque-warning td { background-color: rgba(245, 158, 11, 0.1) !important; }
             .destaque-info td { background-color: rgba(59, 130, 246, 0.1) !important; }
+            
+            /* Estilos para valores */
+            .valor-negativo { color: #ef4444 !important; font-weight: 700; }
+            .valor-positivo { color: #10b981 !important; font-weight: 700; }
         `;
         document.head.appendChild(style);
     }
