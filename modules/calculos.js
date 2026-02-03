@@ -271,34 +271,28 @@ function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, fal
     const diasUteisMes = calcularDiasUteisNoMes(mes, ano);
     const horasEsperadasMes = diasUteisMes * 8;
     
-    // CORREÇÃO: CÁLCULO PROPORCIONAL CORRETO
-    // 1. Calcular percentual de horas trabalhadas
-    let percentualTrabalhado = 1; // Assume 100% se horasEsperadasMes for 0
+    // 1. CALCULAR SALÁRIO PROPORCIONAL COM BASE NAS HORAS TRABALHADAS
+    let salarioProporcional = salario; // Começa com salário completo
     
-    if (horasEsperadasMes > 0) {
-        percentualTrabalhado = totalHoras / horasEsperadasMes;
-        
-        // Limitar a 100% (não pode receber mais que 100% do salário por horas)
-        percentualTrabalhado = Math.min(percentualTrabalhado, 1);
-        
-        // Se trabalhou menos que o mínimo (menos de 1 hora por dia útil em média)
-        if (percentualTrabalhado < (diasUteisMes / horasEsperadasMes)) {
-            percentualTrabalhado = 0; // Não trabalhou o suficiente
-        }
+    if (horasEsperadasMes > 0 && totalHoras < horasEsperadasMes) {
+        // Aplicar desconto proporcional apenas se trabalhou menos que o esperado
+        const percentualTrabalhado = totalHoras / horasEsperadasMes;
+        salarioProporcional = Math.round(salario * percentualTrabalhado * 100) / 100;
     }
-    
-    // 2. Calcular salário proporcional
-    let salarioProporcional = Math.round(salario * percentualTrabalhado * 100) / 100;
     
     // Garantir valores válidos
     salarioProporcional = Math.max(0, salarioProporcional);
-    salarioProporcional = Math.min(salario, salarioProporcional); // Não pode ser maior que salário base
     
-    // Calcular valores monetários
-    const valorTotalExtras = Math.round(extrasSemanais * valorHora * 1.5 * 100) / 100; // Extras pagas com 50% adicional
+    // 2. CALCULAR DESCONTO REAL (diferença entre salário base e proporcional)
+    const descontoCalculado = salario - salarioProporcional;
     
-    // Total líquido (salário proporcional + extras)
-    const totalLiquido = Math.round((salarioProporcional + valorTotalExtras) * 100) / 100;
+    // 3. CALCULAR VALOR DAS EXTRAS (50% adicional)
+    const valorTotalExtras = Math.round(extrasSemanais * valorHora * 1.5 * 100) / 100;
+    
+    // 💡 CORREÇÃO CRÍTICA: CÁLCULO DO TOTAL LÍQUIDO CORRETO
+    // Total Líquido = Salário Proporcional + Valor das Extras
+    let totalLiquido = salarioProporcional + valorTotalExtras;
+    totalLiquido = Math.round(totalLiquido * 100) / 100;
     
     // Atualizar elementos HTML
     document.getElementById("salarioBase").innerText = formatarMoeda(salario);
@@ -309,7 +303,7 @@ function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, fal
     document.getElementById("totalFaltas").innerText = faltas.toFixed(2) + " h";
     document.getElementById("valorHora").innerText = formatarMoeda(valorHora);
     document.getElementById("valorExtras").innerText = formatarMoeda(valorTotalExtras);
-    document.getElementById("valorDescontos").innerText = formatarMoeda(totalDescontos);
+    document.getElementById("valorDescontos").innerText = formatarMoeda(descontoCalculado);
     document.getElementById("salarioProporcional").innerText = formatarMoeda(salarioProporcional);
     document.getElementById("totalLiquido").innerText = formatarMoeda(totalLiquido);
     
@@ -318,11 +312,10 @@ function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, fal
     console.log("Salário base:", formatarMoeda(salario));
     console.log("Horas trabalhadas:", totalHoras.toFixed(2), "h");
     console.log("Horas esperadas:", horasEsperadasMes.toFixed(0), "h");
-    console.log("Dias úteis no mês:", diasUteisMes);
-    console.log("Percentual trabalhado:", (percentualTrabalhado * 100).toFixed(2) + "%");
-    console.log("Salário proporcional:", formatarMoeda(salarioProporcional));
-    console.log("Desconto calculado:", formatarMoeda(salario - salarioProporcional));
     console.log("Horas faltantes:", faltas.toFixed(2), "h");
+    console.log("Percentual trabalhado:", horasEsperadasMes > 0 ? ((totalHoras / horasEsperadasMes) * 100).toFixed(2) + "%" : "100%");
+    console.log("Salário proporcional:", formatarMoeda(salarioProporcional));
+    console.log("Desconto calculado:", formatarMoeda(descontoCalculado));
     console.log("Valor hora:", formatarMoeda(valorHora));
     console.log("Extras semanais:", extrasSemanais.toFixed(2), "h");
     console.log("Valor extras (+50%):", formatarMoeda(valorTotalExtras));
@@ -337,34 +330,29 @@ function atualizarResumo(salario, totalHoras, extrasDiarias, extrasSemanais, fal
     }, 500);
     
     // Aplicar classes de cor para valores
-    if (totalDescontos > 0 || salarioProporcional < salario) {
+    if (descontoCalculado > 0) {
         document.getElementById("valorDescontos").classList.add("valor-negativo");
+        document.getElementById("salarioProporcional").classList.add("valor-negativo");
+        
+        // Mostrar mensagem clara do desconto
+        if (faltas > 0) {
+            mostrarMensagem(
+                `⚠️ Desconto aplicado: ${formatarMoeda(descontoCalculado)}<br>` +
+                `<small>${faltas.toFixed(2)}h faltantes × ${formatarMoeda(valorHora)} = ${formatarMoeda(totalDescontos)}<br>` +
+                `Salário proporcional: ${horasEsperadasMes > 0 ? ((totalHoras / horasEsperadasMes) * 100).toFixed(1) : 100}% de ${formatarMoeda(salario)}</small>`,
+                "warning",
+                6000
+            );
+        }
     } else {
         document.getElementById("valorDescontos").classList.remove("valor-negativo");
+        document.getElementById("salarioProporcional").classList.remove("valor-negativo");
     }
     
     if (valorTotalExtras > 0) {
         document.getElementById("valorExtras").classList.add("valor-positivo");
     } else {
         document.getElementById("valorExtras").classList.remove("valor-positivo");
-    }
-    
-    if (salarioProporcional < salario) {
-        document.getElementById("salarioProporcional").classList.add("valor-negativo");
-        const descontoTotal = salario - salarioProporcional;
-        
-        // Mostrar mensagem clara do desconto
-        if (faltas > 0) {
-            mostrarMensagem(
-                `⚠️ Desconto aplicado: ${formatarMoeda(descontoTotal)}<br>` +
-                `<small>${faltas.toFixed(2)}h faltantes × ${formatarMoeda(valorHora)} = ${formatarMoeda(totalDescontos)}<br>` +
-                `Salário proporcional: ${(percentualTrabalhado * 100).toFixed(1)}% de ${formatarMoeda(salario)}</small>`,
-                "warning",
-                6000
-            );
-        }
-    } else {
-        document.getElementById("salarioProporcional").classList.remove("valor-negativo");
     }
     
     // Mostrar mensagem se houver extras
