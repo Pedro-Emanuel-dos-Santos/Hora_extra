@@ -2,12 +2,6 @@
 // MÓDULO: CALENDÁRIO E CONTROLE DE DIAS
 // ============================================
 
-// NOVOS HORÁRIOS PADRÃO
-const HORARIO_INICIO_MANHA = "06:00";
-const HORARIO_FIM_MANHA = "12:00";
-const HORARIO_INICIO_TARDE = "13:00";
-const HORARIO_FIM_TARDE = "18:00";
-
 /**
  * Preenche os selects de mês e ano com valores
  */
@@ -113,7 +107,7 @@ function gerarCalendario() {
     
     // Mostrar mensagem informativa
     const diasUteis = calcularDiasUteisNoMes(mes, ano);
-    const horasEsperadas = diasUteis * 8.5; // 6h-12h (6h) + 13h-18h (5h) = 11h
+    const horasEsperadas = diasUteis * 8;
     
     mostrarMensagem(`📅 Calendário gerado com ${diasMes} dias (${diasUteis} úteis)!<br><small>Horas esperadas: ${horasEsperadas}h | Use "Preencher Horários" para preencher automaticamente.</small>`, "success");
     
@@ -122,8 +116,7 @@ function gerarCalendario() {
 }
 
 /**
- * Preenche automaticamente os horários padrão da empresa
- * 06:00-12:00 e 13:00-18:00 para dias úteis
+ * Preenche automaticamente os horários padrão
  */
 function preencherHorariosPadrao() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
@@ -143,11 +136,11 @@ function preencherHorariosPadrao() {
         if (!isFimDeSemana) {
             const inputs = linha.querySelectorAll("input[type='time']");
             
-            // Preencher com NOVOS horários padrão da empresa
-            inputs[0].value = "06:00"; // Entrada manhã
-            inputs[1].value = "12:00"; // Saída manhã
-            inputs[2].value = "13:00"; // Entrada tarde
-            inputs[3].value = "18:00"; // Saída tarde
+            // Preencher com horários padrão da empresa
+            inputs[0].value = "08:00";  // Entrada manhã
+            inputs[1].value = "12:00";  // Saída manhã
+            inputs[2].value = "13:30";  // Entrada tarde
+            inputs[3].value = "18:00";  // Saída tarde
             
             // Destacar visualmente que foi preenchido
             destaqueLinha(linha, "success");
@@ -162,11 +155,10 @@ function preencherHorariosPadrao() {
     // Mostrar mensagem de confirmação
     mostrarMensagem(
         `✅ Horários padrão preenchidos em ${diasPreenchidos} dias úteis!<br>` +
-        `<small>06:00-12:00 e 13:00-18:00 (Total: 11h/dia)</small>`, 
+        `<small>08:00-12:00 e 13:30-18:00</small>`, 
         "success"
     );
 }
-
 /**
  * Limpa todos os horários da tabela (com modal de confirmação)
  */
