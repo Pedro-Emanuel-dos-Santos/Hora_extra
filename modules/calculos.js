@@ -3,7 +3,7 @@
 // ============================================
 
 // JORNADA PADRÃO
-const HORARIO_INICIO_MANHA = "08:00";
+const HORARIO_INICIO_MANHA = "06:00";
 const HORARIO_FIM_MANHA = "12:00";
 const HORARIO_INICIO_TARDE = "13:30";
 const HORARIO_FIM_TARDE = "18:00";
