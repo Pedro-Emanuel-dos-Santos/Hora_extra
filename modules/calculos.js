@@ -3,11 +3,11 @@
 // ============================================
 
 // JORNADA PADRÃO
-const HORARIO_INICIO_MANHA = "08:00";
+const HORARIO_INICIO_MANHA = "06:00";
 const HORARIO_FIM_MANHA = "12:00";
-const HORARIO_INICIO_TARDE = "13:30";
+const HORARIO_INICIO_TARDE = "13:00";
 const HORARIO_FIM_TARDE = "18:00";
-const HORAS_POR_DIA_UTIL = 8.5; // 4h manhã + 4.5h tarde = 8.5h
+const HORAS_POR_DIA_UTIL = 11.0; // 4h manhã + 4.5h tarde = 8.5h
 const DIAS_TRABALHO_POR_MES = 22; // Média de dias úteis por mês
 const HORAS_POR_MES = 220; // 22 dias × 8.5h = 187h, mas usamos 220h padrão para cálculo
 
