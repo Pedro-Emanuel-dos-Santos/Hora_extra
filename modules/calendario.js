@@ -116,8 +116,7 @@ function gerarCalendario() {
 }
 
 /**
- * Preenche automaticamente os horários padrão da empresa
- * 07:30-12:00 e 13:30-18:00 para dias úteis
+ * Preenche automaticamente os horários padrão
  */
 function preencherHorariosPadrao() {
     const linhas = document.querySelectorAll("#corpoTabela tr");
@@ -138,10 +137,10 @@ function preencherHorariosPadrao() {
             const inputs = linha.querySelectorAll("input[type='time']");
             
             // Preencher com horários padrão da empresa
-            inputs[0].value = "07:30"; // Entrada manhã
-            inputs[1].value = "12:00"; // Saída manhã
-            inputs[2].value = "13:30"; // Entrada tarde
-            inputs[3].value = "18:00"; // Saída tarde
+            inputs[0].value = "08:00";  // Entrada manhã
+            inputs[1].value = "12:00";  // Saída manhã
+            inputs[2].value = "13:30";  // Entrada tarde
+            inputs[3].value = "18:00";  // Saída tarde
             
             // Destacar visualmente que foi preenchido
             destaqueLinha(linha, "success");
@@ -154,9 +153,12 @@ function preencherHorariosPadrao() {
     setTimeout(() => calcularMes(), 300);
     
     // Mostrar mensagem de confirmação
-    mostrarMensagem(`✅ Horários padrão preenchidos em ${diasPreenchidos} dias úteis!<br><small>07:30-12:00 e 13:30-18:00</small>`, "success");
+    mostrarMensagem(
+        `✅ Horários padrão preenchidos em ${diasPreenchidos} dias úteis!<br>` +
+        `<small>08:00-12:00 e 13:30-18:00</small>`, 
+        "success"
+    );
 }
-
 /**
  * Limpa todos os horários da tabela (com modal de confirmação)
  */
